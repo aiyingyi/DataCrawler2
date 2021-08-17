@@ -64,7 +64,7 @@ key_map = {
 key_set = set()
 
 
-# 返回一个数据模板对象
+# 返回一个数据模板对象,用以指定保存到excel中的数据模板
 def get_dict_model():
     return {'CPXH': '', 'CPMC': '', 'CPSB': '', 'QYMC': '', 'PC': '', 'CHANG': '',
             'KUAN': '', 'GAO': '', 'RLZL': '', 'YJBZ': '', 'FPL': '',

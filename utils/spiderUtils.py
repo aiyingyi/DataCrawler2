@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 # @Time    : 2021/7/14 17:33
 # @Author  : aiyingyi
 # @file_name: spiderUtils.py
@@ -19,6 +19,7 @@ from xlutils.copy import copy
 import xlrd
 import os.path
 from bs4 import BeautifulSoup
+from pathlib import Path
 
 """
     工具类
@@ -26,7 +27,6 @@ from bs4 import BeautifulSoup
 
 
 class utils:
-
     # 定义session
     single_session = None
     # 定义请求头
@@ -90,6 +90,7 @@ class utils:
                 result = encrypt.hexdigest()
                 if result == data['ct']:
                     return clearance
+
     # 返回请求页面的内容，使用单例session
 
     @classmethod
@@ -131,10 +132,10 @@ class utils:
         add_dict_to_cookiejar(session.cookies, {'__jsl_clearance_s': jsl_clearance_s})
         return session.get(url, headers=utils.headers).text
 
-
     '''
          获取公示数据新产品以及变更扩展的列表页的连接
     '''
+
     @classmethod
     # 处理列表页，获取详情页对应的连接
     def parse_list_page(page_text):
@@ -153,9 +154,6 @@ class utils:
                 for i in range(0, count):
                     result.append(href_list[i * 5]['href'])
             return result
-
-
-
 
     # 新增Excel并添加数据
     @classmethod
@@ -193,6 +191,7 @@ class utils:
             print('写入excel失败！', e)
 
     # 追加内容到Excel
+    @classmethod
     def append_to_excel(self, result, file_name):
         '''
         追加数据到excel
@@ -218,3 +217,21 @@ class utils:
             print('追加成功！')
         except Exception as e:
             print('追加失败！', e)
+
+    # 判断文件是否存在
+    @classmethod
+    def checkFile(cls, file_name):
+        if Path(file_name).exists():
+            return '1'
+        else:
+            return '0'
+
+    # 数据保存到Excel
+    @classmethod
+    def saveData(cls, data_list, file_name):
+        # 判断文件是否存在，不存在就创建创建
+        myfile = Path(file_name)
+        if myfile.exists():
+            utils.append_to_excel(data_list, file_name)
+        else:
+            utils.write_to_excel(data_list, file_name)

@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
-
 '''
   公示数据新产品爬取
 '''
+
 import ast
 import json
-from utils.spiderUtils import HttpUtils
 from bs4 import BeautifulSoup
 import re
+from utils.spiderUtils import utils
+
 
 
 # 解析第一次请求的列表页，获取数据总条数
@@ -23,27 +24,8 @@ def get_count(page_text):
         # 获取总条数以及总页码
         query_data = soup.find('div', id='WsyOZQ_pagination').get('querydata')
         # 转换成dict
-        count  = ast.literal_eval(query_data)
+        count = ast.literal_eval(query_data)
         return count
-
-
-# 处理列表页，获取详情页对应的连接
-def parse_list_page(page_text):
-    if page_text is not None:
-        # 将页面内容转换成json
-        page_dict = json.loads(page_text)
-        # 获取响应的html代码
-        html = page_dict['data']['html']
-        # 解析页面，获取当前页面的所有详情页连接
-        soup = BeautifulSoup(html, 'html.parser')
-        href_list = soup.findAll('a')
-        result = []
-        if href_list is not None and len(href_list) != 0:
-            # 去除重复的内容，并获取href属性
-            count = int(len(href_list) / 5)
-            for i in range(0, count):
-                result.append(href_list[i * 5]['href'])
-        return result
 
 
 # 解析详情页数据
@@ -131,27 +113,27 @@ def parse_detail_page(page_text):
 # 爬取公示数据新产品到excel
 def new_product_spider():
     # 获取首次请求的完整url
-    url = HttpUtils.get_config('new_product_url')
-    page_size = int(HttpUtils.get_config('pageSize'))
+    url = utils.get_config('new_product_url')
+    page_size = int(utils.get_config('pageSize'))
     # 获取url的前缀和后缀，用于将pageNo替换掉更换url
-    prefix = HttpUtils.get_config('new_product_url_prefix')
-    suffix = HttpUtils.get_config('new_product_url_suffix')
+    prefix = utils.get_config('new_product_url_prefix')
+    suffix = utils.get_config('new_product_url_suffix')
     # 获取批次信息
-    pc = HttpUtils.get_config('pc')
+    pc = utils.get_config('pc')
     result = []
     # 获取总的数据条数
-    count = int(get_count(HttpUtils.get_page(url))['count'])
+    count = int(get_count(utils.get_page(url))['count'])
     # 计算出总页数
     pageCount = int(count / page_size) + 1
 
     for pageNo in range(1, pageCount + 1):
         # 获取当前列表页连接集合
-        link_list = parse_list_page(HttpUtils.get_page(prefix + str(pageNo) + suffix))
+        link_list = utils.parse_list_page(utils.get_page(prefix + str(pageNo) + suffix))
         for link in link_list:
-            data = parse_detail_page(HttpUtils.get_page('https://www.miit.gov.cn' + link))
+            data = parse_detail_page(utils.get_page('https://www.miit.gov.cn' + link))
             data['pc'] = pc
             result.append(data)
-    HttpUtils.write_to_excel(result, 'E:/产品准入公示数据_新产品_第' + pc + '批.xls')
+    utils.write_to_excel(result, 'E:/产品准入公示数据_新产品_第' + pc + '批.xls')
 
 
 if __name__ == '__main__':
