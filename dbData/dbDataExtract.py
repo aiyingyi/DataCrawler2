@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2021/8/13 15:14
 # @Author  : aiyingyi
-# @FileName: dbData2.py
+# @FileName: dbDataExtract.py
 # @Software: PyCharm
 
 '''
@@ -270,7 +270,7 @@ def parse_kc_page(soup):
 # 解析运输车
 def parse_ysc_page(soup):
     data = get_data()
-    data['CLLB'] = '运输车'
+    data['CLLB'] = '货车'
     tables = soup.select('.info-table.thCenter.w')
     data['DBCXBH'] = tables[0].find('span').text
     trs = tables[1].findAll('tr')
@@ -347,7 +347,7 @@ def parse_ysc_page(soup):
 # 牵引车页面解析
 def parse_qyc_page(soup):
     data = get_data()
-    data['CLLB'] = '牵引车'
+    data['CLLB'] = '牵引车辆'
     tables = soup.select('.info-table.thCenter.w')
     data['DBCXBH'] = tables[0].find('span').text
     trs = tables[1].findAll('tr')
@@ -538,7 +538,8 @@ def parse_gc_page(soup):
     return data
 
 
-if __name__ == '__main__':
+# 爬取数据
+def spider():
     session = requests.session()
     url = get_config('db_url_prefix') + '0' + get_config('db_url_suffix') + get_config('pageSize')
     headers = {
@@ -564,8 +565,8 @@ if __name__ == '__main__':
     totalPage = result.get('totalPage')
 
     # 爬取每一页的数据
-    for pageNo in range(170, totalPage):
-        print(pageNo,totalPage)
+    for pageNo in range(0, totalPage):
+        print(pageNo, totalPage)
         url = get_config('db_url_prefix') + str(pageNo) + get_config('db_url_suffix') + get_config('pageSize')
         page_text = session.post(url, headers=headers, data=params).text
         page_json = json.loads(page_text)
@@ -595,3 +596,7 @@ if __name__ == '__main__':
             result.append(res)
         # 将每一页的数据分批次存入excel中
         utils.saveData(result, 'F://达标数据_第' + get_config('PC') + '批.xls')
+
+
+if __name__ == '__main__':
+    spider()
