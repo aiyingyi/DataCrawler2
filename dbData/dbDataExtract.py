@@ -8,6 +8,11 @@
 '''
 
 达标数据爬取
+
+达标车型编号是该车型在当前批次下的唯一编号，在外观照片项下方显示。达标车型编号共 10 位，其中第 1 位为字母代表车辆类别，
+字母对应的含义为 K（客车）、C（乘用车）、H（载货汽车）、Q（牵引车辆）、G（挂车）；
+第 2-4 位数字代表发布批次，
+第 5-10 位为生成的 3 随机编码
 '''
 import json
 
@@ -556,7 +561,7 @@ def spider():
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36',
         'X-Requested-With': 'XMLHttpRequest'
     }
-    params = '{}'
+    params = '{"LIKE_STANDARD_CAR_NUM": "G034"}'
     # 此时得到的text是unicode编码格式
     response = session.post(url, headers=headers, data=params).text
     # 使用json对其进行转码解析
@@ -565,7 +570,7 @@ def spider():
     totalPage = result.get('totalPage')
 
     # 爬取每一页的数据
-    for pageNo in range(0, totalPage):
+    for pageNo in range(12, totalPage):
         print(pageNo, totalPage)
         url = get_config('db_url_prefix') + str(pageNo) + get_config('db_url_suffix') + get_config('pageSize')
         page_text = session.post(url, headers=headers, data=params).text
