@@ -1,24 +1,22 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# @Time    : 2021/8/13 15:14
+# @Time    : 2021/9/26 11:14
 # @Author  : aiyingyi
 # @FileName: dbGsDataExtract.py
 # @Software: PyCharm
 
 '''
 
-达标数据爬取
-
-达标车型编号是该车型在当前批次下的唯一编号，在外观照片项下方显示。达标车型编号共 10 位，其中第 1 位为字母代表车辆类别，
-字母对应的含义为 K（客车）、C（乘用车）、H（载货汽车）、Q（牵引车辆）、G（挂车）；
-第 2-4 位数字代表发布批次，
-第 5-10 位为生成的 3 随机编码
+达标公示数据爬取，注意不是达标公布数据，公示数据没有达标编号，详情页连接是从excel中读取的
 '''
 import json
 
+import openpyxl
 import requests
 from configparser import RawConfigParser
 import os
+
+import xlrd
 from bs4 import BeautifulSoup
 from utils.spiderUtils import utils
 
@@ -55,17 +53,6 @@ def get_data():
         'YZWTSYZZ': '', 'BGQYC_BGCQYXGG': '', 'BGQYC_BGCQHZBJ': '', 'BGQYC_BGCJXBJ': '', 'ZDXYSJB': '',
         'BGQYC_BGCZHDSPJL': '', 'QYGLJQZXLDGD': '', 'QYHC_ZZZGCQHZBJ': ''
     }
-
-
-# 加载配置文件，配置文件与执行的py文件在同一目录下
-def get_config(config_name):
-    conn = RawConfigParser()
-    file_path = os.path.join(os.path.abspath('.'), 'dbConfig.ini')
-    if not os.path.exists(file_path):
-        raise FileNotFoundError("文件不存在")
-    conn.read(file_path, encoding='utf-8')
-    value = conn.get('api', config_name)
-    return value
 
 
 # 解析乘用车
@@ -545,62 +532,38 @@ def parse_gc_page(soup):
 
 # 爬取数据
 def spider():
-    session = requests.session()
-    url = get_config('db_url_prefix') + '0' + get_config('db_url_suffix') + get_config('pageSize')
-    headers = {
-        'Accept': 'application/json, text/javascript, */*; q=0.01',
-        'Accept-Encoding': 'gzip, deflate',
-        'Accept-Language': 'zh-CN,zh;q=0.9',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-        'Content-Type': 'application/json',
-        'Host': 'atestsc.mot.gov.cn',
-        'Origin': 'http://atestsc.mot.gov.cn',
-        'Pragma': 'no-cache',
-        'Referer': 'http://atestsc.mot.gov.cn/col151/list',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36',
-        'X-Requested-With': 'XMLHttpRequest'
-    }
-    params = '{"LIKE_STANDARD_CAR_NUM": "G034"}'
-    # 此时得到的text是unicode编码格式
-    response = session.post(url, headers=headers, data=params).text
-    # 使用json对其进行转码解析
-    result = json.loads(response).get('info')
-    # 获取总页码数
-    totalPage = result.get('totalPage')
+    link_list = []
+    wb = openpyxl.load_workbook(r'C:\Users\13099\Desktop\达标公示数据.xlsx')
+    sheet = wb.active
+    for row in range(1, sheet.max_row + 1):
+        cell = sheet.cell(row=row, column=1).value
+        link_list.append(cell)
+    result = []
 
-    # 爬取每一页的数据
-    for pageNo in range(1, totalPage):
-        print(pageNo, totalPage)
-        url = get_config('db_url_prefix') + str(pageNo) + get_config('db_url_suffix') + get_config('pageSize')
-        page_text = session.post(url, headers=headers, data=params).text
-        page_json = json.loads(page_text)
-        page_list = page_json.get('info').get('list')
-        # 获取当前列表页面的数据连接,以及汽车类型
-        result = []  # 定义每一页的结果集
-        for page in page_list:
-            # print(page.get('FILE_PATH'))
-            response = requests.get(page.get('FILE_PATH')).content.decode('utf-8')
-            soup = BeautifulSoup(response, 'html.parser')
-            # 获取标题
-            title = soup.find('h3').text
-            # print(title)
-            res = None
-            if '客车' in title:
-                res = parse_kc_page(soup)
-            elif '乘用' in title:
-                res = parse_cyc_page(soup)
-            elif '牵引' in title:
-                res = parse_qyc_page(soup)
-            elif '载货汽车' in title:
-                res = parse_ysc_page(soup)
-            elif '挂车' in title:
-                res = parse_gc_page(soup)
-            # 添加批次信息
-            res['PC'] = get_config('pageSize')
-            result.append(res)
-        # 将每一页的数据分批次存入excel中
-        utils.saveData(result, 'F://达标数据_第' + get_config('PC') + '批.xls')
+    for link in link_list:
+        print(link)
+        # 获取到每一页的连接
+        response = requests.get(link).content.decode('utf-8')
+        soup = BeautifulSoup(response, 'html.parser')
+        # 获取标题
+        title = soup.find('h3').text
+        # print(title)
+        res = None
+        if '客车' in title:
+            res = parse_kc_page(soup)
+        elif '乘用' in title:
+            res = parse_cyc_page(soup)
+        elif '牵引' in title:
+            res = parse_qyc_page(soup)
+        elif '载货汽车' in title:
+            res = parse_ysc_page(soup)
+        elif '挂车' in title:
+            res = parse_gc_page(soup)
+        # 添加批次信息
+        result.append(res)
+    # 将每一页的数据分批次存入excel中
+    print(len(result))
+    utils.saveData(result, 'F://达标公示数据.xls')
 
 
 if __name__ == '__main__':

@@ -11,7 +11,6 @@ import re
 from utils.spiderUtils import utils
 
 
-
 # 解析第一次请求的列表页，获取数据总条数
 def get_count(page_text):
     if page_text is not None:
@@ -120,7 +119,6 @@ def new_product_spider():
     suffix = utils.get_config('new_product_url_suffix')
     # 获取批次信息
     pc = utils.get_config('pc')
-    result = []
     # 获取总的数据条数
     count = int(get_count(utils.get_page(url))['count'])
     # 计算出总页数
@@ -128,12 +126,20 @@ def new_product_spider():
 
     for pageNo in range(1, pageCount + 1):
         # 获取当前列表页连接集合
-        link_list = utils.parse_list_page(utils.get_page(prefix + str(pageNo) + suffix))
+        print("第%d页,共%d页" % (pageNo, pageCount))
+        page_text = utils.get_page(prefix + str(pageNo) + suffix)
+        print(page_text)
+        link_list = utils.parse_list_page(page_text)
+
+        result = []
         for link in link_list:
+            print(link)
             data = parse_detail_page(utils.get_page('https://www.miit.gov.cn' + link))
             data['pc'] = pc
             result.append(data)
-    utils.write_to_excel(result, 'E:/产品准入公示数据_新产品_第' + pc + '批.xls')
+        utils.saveData(result, 'E:/产品准入公示数据_新产品_第' + pc + '批.xls')
+
+    # utils.write_to_excel(result, 'E:/产品准入公示数据_新产品_第' + pc + '批.xls')
 
 
 if __name__ == '__main__':

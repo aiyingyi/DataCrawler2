@@ -138,7 +138,7 @@ class utils:
 
     @classmethod
     # 处理列表页，获取详情页对应的连接
-    def parse_list_page(page_text):
+    def parse_list_page(cls,page_text):
         if page_text is not None:
             # 将页面内容转换成json
             page_dict = json.loads(page_text)

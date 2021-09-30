@@ -76,6 +76,7 @@ def get_dict_model():
             'CLXH': '', 'DPXHANDQY': '', 'SFMJ': '', 'TCRQ': '', 'TSRQ': '', 'EDZDZZL': '', 'QLZDFS': '', 'HLZDFS': '',
             'QLZDCZFS': '', 'HLZDCZFS': '', 'FDJSB': '', 'BDZS': '', 'CPH': ''}
 
+
 def get_count(page_text):
     if page_text is not None:
         # 将页面内容转换成json
@@ -137,9 +138,10 @@ def extends_spider():
     suffix = utils.get_config('extend_url_suffix')
     # 获取批次信息
     pc = utils.get_config('pc')
-    result = []
+
     # 获取总的数据条数
     count = int(get_count(utils.get_page_by_singlesession(url))['count'])
+
     # 计算出总页数
     pageCount = int(count / page_size) + 1
 
@@ -148,14 +150,20 @@ def extends_spider():
         # 获取当前列表页连接集合
         print('页码：', pageNo, '总页码：', pageCount)
         link_list = utils.parse_list_page(utils.get_page_by_singlesession(prefix + str(pageNo) + suffix))
+
+        result = []
         for link in link_list:
+            print(link)
             data = parse_detail_page(utils.get_page_by_singlesession('https://www.miit.gov.cn' + link))
             data['PC'] = pc
+            print(data)
             result.append(data)
+        utils.saveData(result, 'E:/产品准入公示数据_变更扩展_第' + pc + '批.xls')
+
     '''
      write_to_excel是将字典的key值取出来作为excel表头，这就要求所有的字典对象都必须有相同的key
     '''
-    utils.write_to_excel(result, 'E:/产品准入公示数据_变更扩展_第' + pc + '批.xls')
+    # utils.write_to_excel(result, 'E:/产品准入公示数据_变更扩展_第' + pc + '批.xls')
 
 
 if __name__ == '__main__':
