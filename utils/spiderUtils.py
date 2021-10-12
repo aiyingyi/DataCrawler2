@@ -99,6 +99,7 @@ class utils:
             # 使用session保持会话
             utils.single_session = requests.session()
             res1 = utils.single_session.get(url, headers=utils.headers)
+            print(res1.text)
             jsl_clearance_s = re.findall(r'cookie=(.*?);location', res1.text)[0]
             # 执行js代码
             jsl_clearance_s = str(execjs.eval(jsl_clearance_s)).split('=')[1].split(';')[0]
