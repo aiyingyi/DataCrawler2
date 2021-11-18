@@ -570,7 +570,7 @@ def spider():
     totalPage = result.get('totalPage')
 
     # 爬取每一页的数据
-    for pageNo in range(1, totalPage):
+    for pageNo in range(74, totalPage):
         print(pageNo, totalPage)
         url = get_config('db_url_prefix') + str(pageNo) + get_config('db_url_suffix') + get_config('pageSize')
         page_text = session.post(url, headers=headers, data=params).text

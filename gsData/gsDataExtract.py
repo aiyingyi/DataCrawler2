@@ -144,3 +144,5 @@ def new_product_spider():
 
 if __name__ == '__main__':
     new_product_spider()
+
+

@@ -9,14 +9,10 @@
 
 达标公示数据爬取，注意不是达标公布数据，公示数据没有达标编号，详情页连接是从excel中读取的
 '''
-import json
 
 import openpyxl
 import requests
-from configparser import RawConfigParser
-import os
 
-import xlrd
 from bs4 import BeautifulSoup
 from utils.spiderUtils import utils
 
@@ -535,19 +531,22 @@ def spider():
     link_list = []
     wb = openpyxl.load_workbook(r'C:\Users\13099\Desktop\达标公示数据.xlsx')
     sheet = wb.active
-    for row in range(1, sheet.max_row + 1):
-        cell = sheet.cell(row=row, column=1).value
+    # 将连接保存到集合
+    for row in range(2, sheet.max_row + 1):
+        cell = sheet.cell(row=row, column=6).value
         link_list.append(cell)
-    result = []
 
+    # 定义空的结果集合
+    result = []
+    # 获取到结果集
+    index = 0
     for link in link_list:
-        print(link)
+        print('第', index, '条', '共', len(link_list), '条：', link)
         # 获取到每一页的连接
         response = requests.get(link).content.decode('utf-8')
         soup = BeautifulSoup(response, 'html.parser')
         # 获取标题
         title = soup.find('h3').text
-        # print(title)
         res = None
         if '客车' in title:
             res = parse_kc_page(soup)
@@ -560,9 +559,11 @@ def spider():
         elif '挂车' in title:
             res = parse_gc_page(soup)
         # 添加批次信息
+        res['pc'] = 36
         result.append(res)
-    # 将每一页的数据分批次存入excel中
-    print(len(result))
+        index = index + 1
+
+    # 将数据存入excel中
     utils.saveData(result, 'F://达标公示数据.xls')
 
 
