@@ -559,7 +559,7 @@ def spider():
         elif '挂车' in title:
             res = parse_gc_page(soup)
         # 添加批次信息
-        res['pc'] = 36
+        res['PC'] = 36
         result.append(res)
         index = index + 1
 
