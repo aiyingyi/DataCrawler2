@@ -153,10 +153,9 @@ class WorkInformation():
         print("详情获取完成！")
 
     def getdata(self):
-        for pageNo in range(265, self.totalPage):
+        for pageNo in range(461, self.totalPage):
             # 获取分页数据
             oriListData = self.getDataList(pageNo)
-
             listData = []
 
             # 过滤掉有问题的数据
