@@ -7,7 +7,7 @@
 
 '''
 
-达标数据爬取
+达标数据爬取，，，，爬取的时候注意  筛选批次
 
 达标车型编号是该车型在当前批次下的唯一编号，在外观照片项下方显示。达标车型编号共 10 位，其中第 1 位为字母代表车辆类别，
 字母对应的含义为 K（客车）、C（乘用车）、H（载货汽车）、Q（牵引车辆）、G（挂车）；
@@ -561,16 +561,22 @@ def spider():
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36',
         'X-Requested-With': 'XMLHttpRequest'
     }
-    params = '{"LIKE_STANDARD_CAR_NUM": "G034"}'
+
+    # 只爬取对应批次的信息
+
+    params = '{"STANDARD_CAR_NUM": "Q037"}'
+
     # 此时得到的text是unicode编码格式
     response = session.post(url, headers=headers, data=params).text
+
     # 使用json对其进行转码解析
     result = json.loads(response).get('info')
     # 获取总页码数
     totalPage = result.get('totalPage')
 
-    # 爬取每一页的数据
-    for pageNo in range(74, totalPage):
+
+    # 爬取每一页的数据,页面从0开始
+    for pageNo in range(0, totalPage):
         print(pageNo, totalPage)
         url = get_config('db_url_prefix') + str(pageNo) + get_config('db_url_suffix') + get_config('pageSize')
         page_text = session.post(url, headers=headers, data=params).text
@@ -578,8 +584,10 @@ def spider():
         page_list = page_json.get('info').get('list')
         # 获取当前列表页面的数据连接,以及汽车类型
         result = []  # 定义每一页的结果集
+
         for page in page_list:
-            # print(page.get('FILE_PATH'))
+
+            print(page.get('FILE_PATH'))
             response = requests.get(page.get('FILE_PATH')).content.decode('utf-8')
             soup = BeautifulSoup(response, 'html.parser')
             # 获取标题
@@ -597,7 +605,7 @@ def spider():
             elif '挂车' in title:
                 res = parse_gc_page(soup)
             # 添加批次信息
-            res['PC'] = get_config('pageSize')
+            res['PC'] = get_config('PC')
             result.append(res)
         # 将每一页的数据分批次存入excel中
         utils.saveData(result, 'F://达标数据_第' + get_config('PC') + '批.xls')

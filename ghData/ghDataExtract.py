@@ -11,7 +11,6 @@
 
 import requests
 import json
-import time
 from bs4 import BeautifulSoup
 from utils.spiderUtils import utils
 import parsePage
@@ -20,11 +19,11 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36'
 }
 
-pageSize = 100
+pageSize = 20
 
-start_date = '2021-08-01 00:00:00.0'
+start_date = '2021-09-25 00:00:00.0'
 
-end_date = '2021-10-00 00:00:00.0'
+end_date = '2021-12-03 00:00:00.0'
 
 data = {
     'page': 1,
@@ -37,6 +36,7 @@ data = {
 def gh_data_spider():
     url = 'https://www.cn-truck.com/gonggao/listhbres'
     data['limit'] = 1
+    print(requests.post(url, headers=headers, data=data).text)
     resp_json = json.loads(requests.post(url, headers=headers, data=data).text)
     # 获取数据总数
     count = int(resp_json.get('count'))
@@ -62,6 +62,7 @@ def gh_data_spider():
         for sbbh in sbbh_list:
             detail_url = 'http://gk.vecc.org.cn/ergs/o3/infoOpen/preview?sbbh=' + sbbh + '&isprotect=false'
             page_text = requests.get(detail_url, headers=headers).text
+
             soup = BeautifulSoup(page_text, 'html.parser')
             # 获取车辆类别
             h1_text = soup.find('h1').text
@@ -111,6 +112,8 @@ def gh_data_spider():
             else:
                 raise Exception('新的车辆类型')
             record['CLLB'] = vehicle_type
+
+            print(record)
             result_list.append(record)
 
         # 每一页结束之后写入文件

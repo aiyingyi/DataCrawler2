@@ -14,16 +14,6 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36'
 }
 
-pageSize = 100
-
-start_date = '2000-07-01 00:00:00.0'
-
-data = {
-    'page': 1,
-    'scqy': '公司',
-    'x': 81,
-    'y': 25
-}
 
 
 # 定义数据模板
