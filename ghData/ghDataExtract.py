@@ -23,7 +23,7 @@ pageSize = 20
 
 start_date = '2021-09-25 00:00:00.0'
 
-end_date = '2021-12-03 00:00:00.0'
+end_date = '2021-12-01 00:00:00.0'
 
 data = {
     'page': 1,
@@ -49,72 +49,77 @@ def gh_data_spider():
 
     # 设置分页大小
     data['limit'] = pageSize
-    for pageNo in range(1, pageCount + 1):
+    for pageNo in range(28, pageCount + 1):
 
         result_list = []
         print('正在解析第%d页，共%d页' % (pageNo, pageCount))
         data['page'] = pageNo
         resp_json = json.loads(requests.post(url, headers=headers, data=data).text)
         data_list = resp_json.get('data')
+        print(data_list)
         # 过滤掉之前发布的信息
-        sbbh_list = [ele.get('sbbh') for ele in data_list if ele.get('gksj') >= start_date and  ele.get('gksj') < end_date]
+        sbbh_list = [ele.get('sbbh') for ele in data_list if
+                     ele.get('gksj') >= start_date and ele.get('gksj') < end_date]
         # 请求每个页面
         for sbbh in sbbh_list:
             detail_url = 'http://gk.vecc.org.cn/ergs/o3/infoOpen/preview?sbbh=' + sbbh + '&isprotect=false'
             page_text = requests.get(detail_url, headers=headers).text
 
-            soup = BeautifulSoup(page_text, 'html.parser')
-            # 获取车辆类别
-            h1_text = soup.find('h1').text
-            vehicle_type = ''.join(
-                [char for char in list(h1_text) if (char != ' ' and char != '\n' and char != '\r' and char != '\t')])
+            print(detail_url)
+            # 处理不能爬取的数据
+            try:
+                soup = BeautifulSoup(page_text, 'html.parser')
+                # 获取车辆类别
+                h1_text = soup.find('h1').text
+                vehicle_type = ''.join(
+                    [char for char in list(h1_text) if
+                     (char != ' ' and char != '\n' and char != '\r' and char != '\t')])
+                # print(vehicle_type + '--------' + detail_url)
+                if vehicle_type == '重型柴油车环保信息':
+                    record = parsePage.parse_paeg_zxcyc(soup)
+                elif vehicle_type == '轻型汽油车环保信息':
+                    record = parsePage.parse_paeg_qxqyc(soup)
+                elif vehicle_type == '重型燃气车环保信息':
+                    record = parsePage.parse_paeg_zxrqc(soup)
+                elif vehicle_type == '摩托车环保信息':
+                    record = parsePage.parse_paeg_motor(soup)
+                elif vehicle_type == '轻型汽车混合动力车环保信息':
+                    record = parsePage.parse_paeg_qxqchhdl(soup)
+                elif vehicle_type == '非道路移动机械(柴油)环保信息':
+                    record = parsePage.parse_paeg_fdlydjx_cy(soup)
+                elif vehicle_type == '轻型两用燃料车环保信息':
+                    record = parsePage.parse_paeg_qxlyrlc(soup)
+                elif vehicle_type == '电动车环保信息':
+                    record = parsePage.parse_paeg_ddc(soup)
+                elif vehicle_type == '轻型柴油车环保信息':
+                    record = parsePage.parse_paeg_qxcyc(soup)
+                elif vehicle_type == '轻便摩托车环保信息':
+                    record = parsePage.parse_paeg_qbmotor(soup)
+                elif vehicle_type == '重型柴油混合动力车环保信息':
+                    record = parsePage.parse_paeg_zxcyhhdlc(soup)
+                elif vehicle_type == '环保信息':
+                    record = parsePage.parse_paeg_hb(soup)
+                elif vehicle_type == '重型汽油车环保信息':
+                    record = parsePage.parse_paeg_zxqyc(soup)
+                elif vehicle_type == '重型甲醇燃料汽车环保信息':
+                    record = parsePage.parse_paeg_zxjcrlqc(soup)
+                elif vehicle_type == '城市车辆重型柴油车环保信息':
+                    record = parsePage.parse_paeg_csclzxcyc(soup)
+                elif vehicle_type == '非道路移动机械柴油机环保信息':
+                    record = parsePage.parse_paeg_fdlydjx_cyj(soup)
+                elif vehicle_type == '轻型燃气车环保信息':
+                    record = parsePage.parse_paeg_qxrqc(soup)
+                elif vehicle_type == '重型燃气混合动力车环保信息':
+                    record = parsePage.parse_paeg_zxrqhhdlc(soup)
+                elif vehicle_type == '轻型混合动力环保信息':
+                    record = parsePage.parse_paeg_qxhhdl(soup)
+                else:
+                    raise Exception('新的车辆类型')
+                record['CLLB'] = vehicle_type
 
-            print(vehicle_type + '--------' + detail_url)
-
-            if vehicle_type == '重型柴油车环保信息':
-                record = parsePage.parse_paeg_zxcyc(soup)
-            elif vehicle_type == '轻型汽油车环保信息':
-                record = parsePage.parse_paeg_qxqyc(soup)
-            elif vehicle_type == '重型燃气车环保信息':
-                record = parsePage.parse_paeg_zxrqc(soup)
-            elif vehicle_type == '摩托车环保信息':
-                record = parsePage.parse_paeg_motor(soup)
-            elif vehicle_type == '轻型汽车混合动力车环保信息':
-                record = parsePage.parse_paeg_qxqchhdl(soup)
-            elif vehicle_type == '非道路移动机械(柴油)环保信息':
-                record = parsePage.parse_paeg_fdlydjx_cy(soup)
-            elif vehicle_type == '轻型两用燃料车环保信息':
-                record = parsePage.parse_paeg_qxlyrlc(soup)
-            elif vehicle_type == '电动车环保信息':
-                record = parsePage.parse_paeg_ddc(soup)
-            elif vehicle_type == '轻型柴油车环保信息':
-                record = parsePage.parse_paeg_qxcyc(soup)
-            elif vehicle_type == '轻便摩托车环保信息':
-                record = parsePage.parse_paeg_qbmotor(soup)
-            elif vehicle_type == '重型柴油混合动力车环保信息':
-                record = parsePage.parse_paeg_zxcyhhdlc(soup)
-            elif vehicle_type == '环保信息':
-                record = parsePage.parse_paeg_hb(soup)
-            elif vehicle_type == '重型汽油车环保信息':
-                record = parsePage.parse_paeg_zxqyc(soup)
-            elif vehicle_type == '重型甲醇燃料汽车环保信息':
-                record = parsePage.parse_paeg_zxjcrlqc(soup)
-            elif vehicle_type == '城市车辆重型柴油车环保信息':
-                record = parsePage.parse_paeg_csclzxcyc(soup)
-            elif vehicle_type == '非道路移动机械柴油机环保信息':
-                record = parsePage.parse_paeg_fdlydjx_cyj(soup)
-            elif vehicle_type == '轻型燃气车环保信息':
-                record = parsePage.parse_paeg_qxrqc(soup)
-            elif vehicle_type == '重型燃气混合动力车环保信息':
-                record = parsePage.parse_paeg_zxrqhhdlc(soup)
-            elif vehicle_type == '轻型混合动力环保信息':
-                record = parsePage.parse_paeg_qxhhdl(soup)
-            else:
-                raise Exception('新的车辆类型')
-            record['CLLB'] = vehicle_type
-
-            print(record)
-            result_list.append(record)
+                result_list.append(record)
+            except Exception:
+                print('无法读取:', detail_url)
 
         # 每一页结束之后写入文件
         utils.saveData(result_list, 'F:/国环数据.xls')

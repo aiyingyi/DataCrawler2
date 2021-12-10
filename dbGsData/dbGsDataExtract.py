@@ -8,6 +8,9 @@
 '''
 
 达标公示数据爬取，注意不是达标公布数据，公示数据没有达标编号，详情页连接是从excel中读取的
+
+将爬取数据的连接直接放在excel的第一列
+
 '''
 
 import openpyxl
@@ -532,8 +535,8 @@ def spider():
     wb = openpyxl.load_workbook(r'C:\Users\13099\Desktop\达标公示数据.xlsx')
     sheet = wb.active
     # 将连接保存到集合
-    for row in range(2, sheet.max_row + 1):
-        cell = sheet.cell(row=row, column=6).value
+    for row in range(1, sheet.max_row + 1):
+        cell = sheet.cell(row=row, column=1).value
         link_list.append(cell)
 
     # 定义空的结果集合

@@ -136,6 +136,7 @@ def new_product_spider():
             print(link)
             data = parse_detail_page(utils.get_page('https://www.miit.gov.cn' + link))
             data['pc'] = pc
+            data['report_type'] = '新产品'
             result.append(data)
         utils.saveData(result, 'E:/产品准入公示数据_新产品_第' + pc + '批.xls')
 

@@ -146,7 +146,7 @@ def extends_spider():
     pageCount = int(count / page_size) + 1
 
     # 爬取数据
-    for pageNo in range(496, pageCount + 1):
+    for pageNo in range(1, pageCount + 1):
         # 获取当前列表页连接集合
         print('页码：', pageNo, '总页码：', pageCount)
         link_list = utils.parse_list_page(utils.get_page_by_singlesession(prefix + str(pageNo) + suffix))
@@ -156,6 +156,7 @@ def extends_spider():
             print(link)
             data = parse_detail_page(utils.get_page_by_singlesession('https://www.miit.gov.cn' + link))
             data['PC'] = pc
+            data['report_type'] = '变更扩展'
             print(data)
             result.append(data)
         utils.saveData(result, 'E:/产品准入公示数据_变更扩展_第' + pc + '批.xls')
