@@ -24,7 +24,7 @@ from xlutils.copy import copy
 class WorkInformation():
 
     fileName = "D:/油耗-传统能源.xls"
-    totalPage = 700  # 抓取数据的总页码数
+    totalPage = 540# 抓取数据的总页码数
     pageSize = 10
     searchText = ""
     reportType = 1  # 指定是获取新能源还是传统能源  1 传统能源汽车油耗数据
@@ -153,14 +153,14 @@ class WorkInformation():
         print("详情获取完成！")
 
     def getdata(self):
-        for pageNo in range(1, self.totalPage):
+        for pageNo in range(448, self.totalPage):
             # 获取分页数据
             oriListData = self.getDataList(pageNo)
             listData = []
 
             # 过滤掉有问题的数据
             for item in oriListData:
-                if item['oversrasName'] != '华晨鑫源重庆汽车有限公司':
+                if item['oversrasName'] != '去除不爬取的公司':
                     listData.append(item)
 
             for item in listData:

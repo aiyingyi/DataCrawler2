@@ -8,7 +8,7 @@
 
 """
  爬取网站链接  https://yhgscx.miit.gov.cn/fuel-consumption-web/mainPage
- 新能源能耗数据
+ 传统能源能耗数据爬取
 """
 
 import requests
@@ -22,11 +22,12 @@ from xlutils.copy import copy
 
 
 class WorkInformation():
-    fileName = "D:/油耗-新能源.xls"
-    totalPage = 68  # 抓取数据的总页码数
+
+    fileName = "D:/油耗-传统能源3.xls"
+    totalPage = 800 # 抓取数据的总页码数
     pageSize = 10
     searchText = ""
-    reportType = 2  # 指定是获取新能源还是传统能源  1 传统能源汽车油耗数据
+    reportType = 1  # 指定是获取新能源还是传统能源  1 传统能源汽车油耗数据
     columnName = ['driveType', 'maximumDesignMass', 'peakPower', 'vehicleQuality',
                   'comprehensiveConditionsFuelConsumptionBelowLimit', 'leadingValue', 'limitValue',
                   'comprehensiveConditions', 'otherInfo', 'uniqId']
@@ -152,18 +153,27 @@ class WorkInformation():
         print("详情获取完成！")
 
     def getdata(self):
-        for pageNo in range(1, self.totalPage):
+        for pageNo in range(645, self.totalPage):
             # 获取分页数据
-            listData = self.getDataList(pageNo)
+            oriListData = self.getDataList(pageNo)
+            listData = []
+
+            # 过滤掉有问题的数据
+            for item in oriListData:
+                if item['oversrasName'] != '去除不爬取的公司':
+                    listData.append(item)
+
             for item in listData:
                 data1 = {
                     "applyId": item["applyId"]
                 }
                 # 获取详细数据
                 self.getDataDetail(item, data1)
+
+
             # 保存数据
             self.saveData(listData, self.fileName)
-            print('第', pageNo, '页写入完成')
+            print('第',pageNo,'页写入完成')
 
 
 if __name__ == "__main__":
