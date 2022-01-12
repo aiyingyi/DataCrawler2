@@ -146,7 +146,7 @@ def extends_spider():
     pageCount = int(count / page_size) + 1
 
     # 爬取数据
-    for pageNo in range(1, pageCount + 1):
+    for pageNo in range(358, pageCount + 1):
         # 获取当前列表页连接集合
         print('页码：', pageNo, '总页码：', pageCount)
         link_list = utils.parse_list_page(utils.get_page_by_singlesession(prefix + str(pageNo) + suffix))
@@ -159,7 +159,7 @@ def extends_spider():
             data['report_type'] = '变更扩展'
             print(data)
             result.append(data)
-        utils.saveData(result, 'E:/产品准入公示数据_变更扩展_第' + pc + '批.xls')
+        utils.saveData(result, 'F:/产品准入公示数据_变更扩展_第' + pc + '批.xls')
 
     '''
      write_to_excel是将字典的key值取出来作为excel表头，这就要求所有的字典对象都必须有相同的key

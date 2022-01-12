@@ -38,6 +38,8 @@ def parse_detail_page(page_text):
     data['CPXH'] = td_list[1].text
     data['CPMC'] = td_list[2].text
     data['QYMC'] = td_list[3].text
+    data['ZCDZ'] = td_list[4].text
+    data['MLXH'] = td_list[5].text
     data['SCDZ'] = td_list[6].text
     # 解析第二个tbody
     td_list = tbody_list[1].findAll('td')
@@ -94,8 +96,11 @@ def parse_detail_page(page_text):
     data['SBDH'] = td_list[25].text
     data['QXHX'] = td_list[26].text
     data['QT'] = td_list[27].text
+    data['SM'] = td_list[28].text
+    data['YHSBZ'] = td_list[29].text
 
     td_list = tbody_list[2].findAll('td')
+    data['TQSB'] = td_list[0].text
     data['DPID'] = td_list[1].text
     data['DPXH'] = td_list[2].text
     data['DPLB'] = td_list[4].text
@@ -138,7 +143,7 @@ def new_product_spider():
             data['pc'] = pc
             data['report_type'] = '新产品'
             result.append(data)
-        utils.saveData(result, 'E:/产品准入公示数据_新产品_第' + pc + '批.xls')
+        utils.saveData(result, 'F:/产品准入公示数据_新产品_第' + pc + '批.xls')
 
     # utils.write_to_excel(result, 'E:/产品准入公示数据_新产品_第' + pc + '批.xls')
 

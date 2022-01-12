@@ -100,17 +100,23 @@ class utils:
             utils.single_session = requests.session()
             res1 = utils.single_session.get(url, headers=utils.headers)
             print(res1.text)
-            jsl_clearance_s = re.findall(r'cookie=(.*?);location', res1.text)[0]
-            # 执行js代码
-            jsl_clearance_s = str(execjs.eval(jsl_clearance_s)).split('=')[1].split(';')[0]
-            # add_dict_to_cookiejar方法添加cookie
-            add_dict_to_cookiejar(utils.single_session.cookies, {'__jsl_clearance_s': jsl_clearance_s})
-            res2 = utils.single_session.get(url, headers=utils.headers)
-            # 提取go方法中的参数
-            data = json.loads(re.findall(r';go\((.*?)\)', res2.text)[0])
-            jsl_clearance_s = utils.getCookie(data)
-            # 修改cookie
-            add_dict_to_cookiejar(utils.single_session.cookies, {'__jsl_clearance_s': jsl_clearance_s})
+
+
+            # todo 网站反爬取机制消失后，记得把这段代码给注释掉，否则开启此段代码
+
+            # jsl_clearance_s = re.findall(r'cookie=(.*?);location', res1.text)[0]
+            # # 执行js代码
+            # jsl_clearance_s = str(execjs.eval(jsl_clearance_s)).split('=')[1].split(';')[0]
+            # # add_dict_to_cookiejar方法添加cookie
+            # add_dict_to_cookiejar(utils.single_session.cookies, {'__jsl_clearance_s': jsl_clearance_s})
+            # res2 = utils.single_session.get(url, headers=utils.headers)
+            # # 提取go方法中的参数
+            # data = json.loads(re.findall(r';go\((.*?)\)', res2.text)[0])
+            # jsl_clearance_s = utils.getCookie(data)
+            # # 修改cookie
+            # add_dict_to_cookiejar(utils.single_session.cookies, {'__jsl_clearance_s': jsl_clearance_s})
+
+
         return utils.single_session.get(url, headers=utils.headers).text
 
     # 返回页面内容,这里面每次请求都会生成一个session
@@ -120,17 +126,19 @@ class utils:
         # 使用session保持会话
         session = requests.session()
         res1 = session.get(url, headers=utils.headers)
-        jsl_clearance_s = re.findall(r'cookie=(.*?);location', res1.text)[0]
-        # 执行js代码
-        jsl_clearance_s = str(execjs.eval(jsl_clearance_s)).split('=')[1].split(';')[0]
-        # add_dict_to_cookiejar方法添加cookie
-        add_dict_to_cookiejar(session.cookies, {'__jsl_clearance_s': jsl_clearance_s})
-        res2 = session.get(url, headers=utils.headers)
-        # 提取go方法中的参数
-        data = json.loads(re.findall(r';go\((.*?)\)', res2.text)[0])
-        jsl_clearance_s = utils.getCookie(data)
-        # 修改cookie
-        add_dict_to_cookiejar(session.cookies, {'__jsl_clearance_s': jsl_clearance_s})
+        # todo 反爬机制取消后，注释掉该段代码
+
+        # jsl_clearance_s = re.findall(r'cookie=(.*?);location', res1.text)[0]
+        # # 执行js代码
+        # jsl_clearance_s = str(execjs.eval(jsl_clearance_s)).split('=')[1].split(';')[0]
+        # # add_dict_to_cookiejar方法添加cookie
+        # add_dict_to_cookiejar(session.cookies, {'__jsl_clearance_s': jsl_clearance_s})
+        # res2 = session.get(url, headers=utils.headers)
+        # # 提取go方法中的参数
+        # data = json.loads(re.findall(r';go\((.*?)\)', res2.text)[0])
+        # jsl_clearance_s = utils.getCookie(data)
+        # # 修改cookie
+        # add_dict_to_cookiejar(session.cookies, {'__jsl_clearance_s': jsl_clearance_s})
         return session.get(url, headers=utils.headers).text
 
     '''

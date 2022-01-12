@@ -284,7 +284,7 @@ def parse_ysc_page(soup):
     data['ZGCS'] = trs[5].findAll('td')[3].text
 
     data['QDXS'] = trs[6].findAll('td')[1].text
-    data['ZXZSL'] = trs[6].findAll('td')[3].text
+    # data['ZXZSL'] = trs[6].findAll('td')[3].text
 
     data['LTGG'] = trs[7].findAll('td')[1].text
     data['LTSL'] = trs[7].findAll('td')[3].text
@@ -571,7 +571,7 @@ def spider():
         index = index + 1
 
     # 将数据存入excel中
-    utils.saveData(result, 'F://达标公示数据.xls')
+    utils.saveData(result, r'C:\Users\13099\Desktop\达标公示数据_.结果lsx')
 
 
 if __name__ == '__main__':

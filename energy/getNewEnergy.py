@@ -23,7 +23,7 @@ from xlutils.copy import copy
 
 class WorkInformation():
     fileName = "D:/油耗-新能源.xls"
-    totalPage = 68  # 抓取数据的总页码数
+    totalPage = 180  # 抓取数据的总页码数
     pageSize = 10
     searchText = ""
     reportType = 2  # 指定是获取新能源还是传统能源  1 传统能源汽车油耗数据
@@ -152,7 +152,7 @@ class WorkInformation():
         print("详情获取完成！")
 
     def getdata(self):
-        for pageNo in range(1, self.totalPage):
+        for pageNo in range(121, self.totalPage):
             # 获取分页数据
             listData = self.getDataList(pageNo)
             for item in listData:
