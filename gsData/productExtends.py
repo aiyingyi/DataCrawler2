@@ -146,7 +146,7 @@ def extends_spider():
     pageCount = int(count / page_size) + 1
 
     # 爬取数据
-    for pageNo in range(358, pageCount + 1):
+    for pageNo in range(1, pageCount + 1):
         # 获取当前列表页连接集合
         print('页码：', pageNo, '总页码：', pageCount)
         link_list = utils.parse_list_page(utils.get_page_by_singlesession(prefix + str(pageNo) + suffix))

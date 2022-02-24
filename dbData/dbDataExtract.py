@@ -7,7 +7,7 @@
 
 '''
 
-达标数据爬取，，，，爬取的时候注意  筛选批次
+达标发布数据爬取，，，，爬取的时候注意  筛选批次
 
 达标车型编号是该车型在当前批次下的唯一编号，在外观照片项下方显示。达标车型编号共 10 位，其中第 1 位为字母代表车辆类别，
 字母对应的含义为 K（客车）、C（乘用车）、H（载货汽车）、Q（牵引车辆）、G（挂车）；
@@ -544,7 +544,7 @@ def parse_gc_page(soup):
 
 
 # 爬取数据
-def spider():
+def spider(type):
     session = requests.session()
     url = get_config('db_url_prefix') + '0' + get_config('db_url_suffix') + get_config('pageSize')
     headers = {
@@ -562,9 +562,8 @@ def spider():
         'X-Requested-With': 'XMLHttpRequest'
     }
 
-    # 只爬取对应批次的信息
-
-    params = '{"STANDARD_CAR_NUM": "Q037"}'
+    # 只爬取对应批次的信息   KCHQG
+    params = '{"STANDARD_CAR_NUM":"' + type + '"}'
 
     # 此时得到的text是unicode编码格式
     response = session.post(url, headers=headers, data=params).text
@@ -573,7 +572,6 @@ def spider():
     result = json.loads(response).get('info')
     # 获取总页码数
     totalPage = result.get('totalPage')
-
 
     # 爬取每一页的数据,页面从0开始
     for pageNo in range(0, totalPage):
@@ -612,4 +610,10 @@ def spider():
 
 
 if __name__ == '__main__':
-    spider()
+    # 爬取所有分类的数据
+    pc = get_config('PC')
+    spider('K0' + pc)
+    spider('C0' + pc)
+    spider('H0' + pc)
+    spider('Q0' + pc)
+    spider('G0' + pc)

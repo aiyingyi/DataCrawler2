@@ -21,9 +21,9 @@ headers = {
 
 pageSize = 20
 
-start_date = '2021-12-05 00:00:00.0'
+start_date = '2022-01-01 00:00:00.0'
 
-end_date = '2021-12-01 00:00:00.0'
+end_date = '2022-02-22 00:00:00.0'
 
 data = {
     'page': 1,
@@ -49,7 +49,7 @@ def gh_data_spider():
 
     # 设置分页大小
     data['limit'] = pageSize
-    for pageNo in range(28, pageCount + 1):
+    for pageNo in range(1, pageCount + 1):
 
         result_list = []
         print('正在解析第%d页，共%d页' % (pageNo, pageCount))

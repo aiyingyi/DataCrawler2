@@ -66,6 +66,7 @@ class WorkInformation():
             for item in result:
                 # 删除多余的字段
                 del item['workConditionVos']
+                item['nyzl'] = '传统能源'
                 for j in range(len(head)):
                     sheet.write(i, j, item[head[j]])
                 # 写完一行，将行号+1
@@ -153,7 +154,8 @@ class WorkInformation():
         print("详情获取完成！")
 
     def getdata(self):
-        for pageNo in range(1477, self.totalPage):
+        # for pageNo in range(950, self.totalPage):
+        for pageNo in range(950, 970):
             # 获取分页数据
             oriListData = self.getDataList(pageNo)
             listData = []
@@ -179,3 +181,5 @@ class WorkInformation():
 if __name__ == "__main__":
     dpf = WorkInformation()
     dpf.getdata()
+
+
