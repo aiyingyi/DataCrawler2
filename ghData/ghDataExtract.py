@@ -26,17 +26,17 @@ start_date = '2022-01-01 00:00:00.0'
 end_date = '2022-02-22 00:00:00.0'
 
 data = {
+    'limit': 1,
     'page': 1,
-    'scqy': '公司',
-    'x': 81,
-    'y': 25
+    'scqy': '公司'
+    # 'x': 89,
+    # 'y': 18
 }
 
 
 def gh_data_spider():
     url = 'https://www.cn-truck.com/gonggao/listhbres'
-    data['limit'] = 1
-    print(requests.post(url, headers=headers, data=data).text)
+    # print(requests.post(url, headers=headers, data=data).text)
     resp_json = json.loads(requests.post(url, headers=headers, data=data).text)
     # 获取数据总数
     count = int(resp_json.get('count'))
@@ -56,16 +56,15 @@ def gh_data_spider():
         data['page'] = pageNo
         resp_json = json.loads(requests.post(url, headers=headers, data=data).text)
         data_list = resp_json.get('data')
-        print(data_list)
+        # print(data_list)
         # 过滤掉之前发布的信息
         sbbh_list = [ele.get('sbbh') for ele in data_list if
                      ele.get('gksj') >= start_date and ele.get('gksj') < end_date]
         # 请求每个页面
         for sbbh in sbbh_list:
             detail_url = 'http://gk.vecc.org.cn/ergs/o3/infoOpen/preview?sbbh=' + sbbh + '&isprotect=false'
-            page_text = requests.get(detail_url, headers=headers).text
-
             print(detail_url)
+            page_text = requests.get(detail_url, headers=headers).text
             # 处理不能爬取的数据
             try:
                 soup = BeautifulSoup(page_text, 'html.parser')
