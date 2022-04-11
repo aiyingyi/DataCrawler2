@@ -532,7 +532,7 @@ def parse_gc_page(soup):
 # 爬取数据
 def spider():
     link_list = []
-    wb = openpyxl.load_workbook(r'C:\Users\13099\Desktop\达标数据公示.xlsx')
+    wb = openpyxl.load_workbook(r'C:\Users\13099\Desktop\达标公示数据.xlsx')
     sheet = wb.active
     # 将连接保存到集合
     for row in range(1, sheet.max_row + 1):
@@ -564,7 +564,7 @@ def spider():
 
 
         # 添加批次信息
-        res['PC'] = 40
+        res['PC'] = 41
 
 
         result.append(res)
