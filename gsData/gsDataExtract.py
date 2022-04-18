@@ -58,6 +58,9 @@ def parse_detail_page(page_text):
     data['YJBZ'] = td_list[2].text
     data['RLZL'] = td_list[3].text
 
+    data['ZGCS'] = td_list[4].text
+    data['ZZL'] = td_list[5].text
+
     data['ZZHL'] = td_list[6].text
     data['EDZL'] = td_list[7].text
     data['ZXXS'] = td_list[8].text
