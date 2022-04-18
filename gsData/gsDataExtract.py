@@ -106,6 +106,7 @@ def parse_detail_page(page_text):
     data['TQSB'] = td_list[0].text
     data['DPID'] = td_list[1].text
     data['DPXH'] = td_list[2].text
+    data['DPXHANDQY'] = td_list[3].text
     data['DPLB'] = td_list[4].text
 
     td_list = tbody_list[3].findAll('td')
