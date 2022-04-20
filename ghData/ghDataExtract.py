@@ -12,6 +12,8 @@
 import requests
 import json
 from bs4 import BeautifulSoup
+
+from ghData import parsePageV2
 from utils.spiderUtils import utils
 import parsePage
 
@@ -77,9 +79,15 @@ def gh_data_spider():
                 if vehicle_type == '重型柴油车环保信息':
                     record = parsePage.parse_paeg_zxcyc(soup)
                 elif vehicle_type == '轻型汽油车环保信息':
-                    record = parsePage.parse_paeg_qxqyc(soup)
+                    try:
+                        record = parsePage.parse_paeg_qxqyc(soup)
+                    except Exception  as e:
+                        record = parsePageV2.parse_paeg_qxqyc(soup)
                 elif vehicle_type == '重型燃气车环保信息':
-                    record = parsePage.parse_paeg_zxrqc(soup)
+                    try:
+                        record = parsePage.parse_paeg_zxrqc(soup)
+                    except Exception as e:
+                        record = parsePageV2.parse_paeg_zxrqc(soup)
                 elif vehicle_type == '摩托车环保信息':
                     record = parsePage.parse_paeg_motor(soup)
                 elif vehicle_type == '轻型汽车混合动力车环保信息':

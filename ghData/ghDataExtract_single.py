@@ -8,10 +8,13 @@
 '''
 国环数据爬取
 '''
+import traceback
 
 import requests
 import json
 from bs4 import BeautifulSoup
+
+from ghData import parsePageV2
 from utils.spiderUtils import utils
 import parsePage
 
@@ -22,7 +25,7 @@ headers = {
 
 def gh_data_spider():
     try:
-        sbbh_list = ['2f49162e9858baffd9bacf8baab6bf3992dd0d0138e43b98']
+        sbbh_list = ['216a53fa21daa2accc965bdc760d6688a8f5badb78f6ab6c']
         # 请求每个页面
         for sbbh in sbbh_list:
             detail_url = 'http://gk.vecc.org.cn/ergs/o3/infoOpen/preview?sbbh=' + sbbh + '&isprotect=false'
@@ -39,9 +42,12 @@ def gh_data_spider():
                 if vehicle_type == '重型柴油车环保信息':
                     record = parsePage.parse_paeg_zxcyc(soup)
                 elif vehicle_type == '轻型汽油车环保信息':
-                    record = parsePage.parse_paeg_qxqyc(soup)
+                    try:
+                        record = parsePage.parse_paeg_qxqyc(soup)
+                    except Exception  as e:
+                        record = parsePageV2.parse_paeg_qxqyc(soup)
                 elif vehicle_type == '重型燃气车环保信息':
-                    record = parsePage.parse_paeg_zxrqc(soup)
+                    record = parsePageV2.parse_paeg_zxrqc(soup)
                 elif vehicle_type == '摩托车环保信息':
                     record = parsePage.parse_paeg_motor(soup)
                 elif vehicle_type == '轻型汽车混合动力车环保信息':
@@ -82,7 +88,7 @@ def gh_data_spider():
 
             except Exception as e:
                 print('无法读取:', detail_url)
-                print(e)
+                print(traceback.format_exc())
 
         # 每一页结束之后写入文件
     except Exception as e:
