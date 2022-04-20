@@ -19,64 +19,23 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36'
 }
 
-pageSize = 20
-
-
-
-# 结束开始顺序不要写错
-end_date = '2021-12-31 00:00:00.0'
-start_date = '2021-12-01 00:00:00.0'
-
-data = {
-    'page': 1,
-    'scqy': '公司',
-    'x': 81,
-    'y': 25
-}
-
 
 def gh_data_spider():
-    url = 'https://www.cn-truck.com/gonggao/listhbres'
-    data['limit'] = 1
-    print(requests.post(url, headers=headers, data=data).text)
-    resp_json = json.loads(requests.post(url, headers=headers, data=data).text)
-    # 获取数据总数
-    count = int(resp_json.get('count'))
-    # 获取页面总数
-    pageCount = count / pageSize
-    if pageCount - int(pageCount) > 0:
-        pageCount = int(pageCount) + 1
-    else:
-        pageCount = int(pageCount)
-
-    # 设置分页大小
-    data['limit'] = pageSize
-    for pageNo in range(1, pageCount + 1):
-
-        result_list = []
-        print('正在解析第%d页，共%d页' % (pageNo, pageCount))
-        data['page'] = pageNo
-        resp_json = json.loads(requests.post(url, headers=headers, data=data).text)
-        data_list = resp_json.get('data')
-        print(data_list)
-        # 过滤掉之前发布的信息
-        sbbh_list = [ele.get('sbbh') for ele in data_list if
-                     ele.get('gksj') >= start_date and ele.get('gksj') < end_date]
+    try:
+        sbbh_list = ['2f49162e9858baffd9bacf8baab6bf3992dd0d0138e43b98']
         # 请求每个页面
         for sbbh in sbbh_list:
             detail_url = 'http://gk.vecc.org.cn/ergs/o3/infoOpen/preview?sbbh=' + sbbh + '&isprotect=false'
-            page_text = requests.get(detail_url, headers=headers).text
-
             print(detail_url)
             # 处理不能爬取的数据
             try:
+                page_text = requests.get(detail_url, headers=headers).text
                 soup = BeautifulSoup(page_text, 'html.parser')
                 # 获取车辆类别
                 h1_text = soup.find('h1').text
                 vehicle_type = ''.join(
                     [char for char in list(h1_text) if
                      (char != ' ' and char != '\n' and char != '\r' and char != '\t')])
-                # print(vehicle_type + '--------' + detail_url)
                 if vehicle_type == '重型柴油车环保信息':
                     record = parsePage.parse_paeg_zxcyc(soup)
                 elif vehicle_type == '轻型汽油车环保信息':
@@ -117,14 +76,17 @@ def gh_data_spider():
                     record = parsePage.parse_paeg_qxhhdl(soup)
                 else:
                     raise Exception('新的车辆类型')
-                record['CLLB'] = vehicle_type
 
-                result_list.append(record)
-            except Exception:
+                record['CLLB'] = vehicle_type
+                print(record)
+
+            except Exception as e:
                 print('无法读取:', detail_url)
+                print(e)
 
         # 每一页结束之后写入文件
-        utils.saveData(result_list, 'F:/国环数据.xls')
+    except Exception as e:
+        print(e)
 
 
 if __name__ == '__main__':

@@ -564,7 +564,7 @@ def spider():
 
 
         # 添加批次信息
-        res['PC'] = 41
+        res['PC'] = 42
 
 
         result.append(res)
