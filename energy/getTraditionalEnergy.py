@@ -22,9 +22,8 @@ from xlutils.copy import copy
 
 
 class WorkInformation():
-
     fileName = "D:/油耗-传统能源.xls"
-    totalPage = 7000# 抓取数据的总页码数
+    totalPage = 7000  # 抓取数据的总页码数
     pageSize = 10
     searchText = ""
     reportType = 1  # 指定是获取新能源还是传统能源  1 传统能源汽车油耗数据
@@ -144,25 +143,29 @@ class WorkInformation():
     # 获取详细信息
     def getDataDetail(self, item, data1):
         dict = {}
-        req = requests.post(self.query_Detail_Url, json=data1, headers=self.header)
-        resp = req.json()
-        objDetail = resp["info"]
-        # key是索引位置，value是原来的key
-        for key, value in enumerate(objDetail):
-            dict[value] = objDetail[value]
-            item.update(dict)
-        print("详情获取完成！")
+        if data1['applyId'] is None:
+            print("详情获取完成！")
+            return item
+        else:
+            req = requests.post(self.query_Detail_Url, json=data1, headers=self.header)
+            resp = req.json()
+            objDetail = resp["info"]
+            # key是索引位置，value是原来的key
+            for key, value in enumerate(objDetail):
+                dict[value] = objDetail[value]
+                item.update(dict)
+            print("详情获取完成！")
 
     def getdata(self):
         # for pageNo in range(950, self.totalPage):
-        for pageNo in range(950, 970):
+        for pageNo in range(5, 300):
             # 获取分页数据
             oriListData = self.getDataList(pageNo)
             listData = []
 
-            # 过滤掉有问题的数据
+            # 过滤掉有问题的数据 ,去除没有详情页的数据
             for item in oriListData:
-                if item['oversrasName'] != '去除不爬取的公司':
+                if item['oversrasName'] != '去除不爬取的公司' and  item["applyId"] is not None:
                     listData.append(item)
 
             for item in listData:
@@ -172,14 +175,11 @@ class WorkInformation():
                 # 获取详细数据
                 self.getDataDetail(item, data1)
 
-
             # 保存数据
             self.saveData(listData, self.fileName)
-            print('第',pageNo,'页写入完成')
+            print('第', pageNo, '页写入完成')
 
 
 if __name__ == "__main__":
     dpf = WorkInformation()
     dpf.getdata()
-
-
