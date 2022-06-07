@@ -154,7 +154,7 @@ class WorkInformation():
 
     def getdata(self):
         # for pageNo in range(121, self.totalPage):
-        for pageNo in range(168, 172):
+        for pageNo in range(79, 200):
             # 获取分页数据
             listData = self.getDataList(pageNo)
             for item in listData:

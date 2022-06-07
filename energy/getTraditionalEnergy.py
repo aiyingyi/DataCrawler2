@@ -147,25 +147,28 @@ class WorkInformation():
             print("详情获取完成！")
             return item
         else:
-            req = requests.post(self.query_Detail_Url, json=data1, headers=self.header)
-            resp = req.json()
-            objDetail = resp["info"]
-            # key是索引位置，value是原来的key
-            for key, value in enumerate(objDetail):
-                dict[value] = objDetail[value]
-                item.update(dict)
-            print("详情获取完成！")
+            try:
+                req = requests.post(self.query_Detail_Url, json=data1, headers=self.header)
+                resp = req.json()
+                objDetail = resp["info"]
+                # key是索引位置，value是原来的key
+                for key, value in enumerate(objDetail):
+                    dict[value] = objDetail[value]
+                    item.update(dict)
+                print("详情获取完成！")
+            except:
+                print(data1['applyId'] + "爬取异常")
 
     def getdata(self):
         # for pageNo in range(950, self.totalPage):
-        for pageNo in range(5, 300):
+        for pageNo in range(151, 152):
             # 获取分页数据
             oriListData = self.getDataList(pageNo)
             listData = []
 
             # 过滤掉有问题的数据 ,去除没有详情页的数据
             for item in oriListData:
-                if item['oversrasName'] != '去除不爬取的公司' and  item["applyId"] is not None:
+                if item['oversrasName'] != '去除不爬取的公司' and item["applyId"] is not None:
                     listData.append(item)
 
             for item in listData:
