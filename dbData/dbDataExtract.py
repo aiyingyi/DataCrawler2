@@ -612,8 +612,8 @@ def spider(type):
 if __name__ == '__main__':
     # 爬取所有分类的数据
     pc = get_config('PC')
-    # spider('K0' + pc)
-    # spider('C0' + pc)
-    # spider('H0' + pc)
+    spider('K0' + pc)
+    spider('C0' + pc)
+    spider('H0' + pc)
     spider('Q0' + pc)
     spider('G0' + pc)
