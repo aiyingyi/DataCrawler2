@@ -548,13 +548,10 @@ def spider():
         'Accept-Language': 'zh-CN,zh;q=0.9',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-
         'Host': 'atestsc.rioh.cn',
         'Pragma': 'no-cache',
         'Upgrade-Insecure-Requests': '1',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36',
-         'Cookie':'9o3WBaX7PdQoS=5liOa4PnGgJBV1qPl0qUaq_fLg7XN79hjK7Y6z5Z3cdztc8uiM_ZsK4JId02qqxqhs7VSOcHeTYq4mw0ym8ycQa; acw_tc=2f61f26516575516838712508e1404a33feeb06b80080475bb5ca2ba4f67cf; 9o3WBaX7PdQoT=5FZVnMCBmJpQxcAPEyWlouAz5QKtzHnfWjiBYUVqaR3BlY6IhIBgJ.EL88GhXu0kaZGCz0Jz70NbZvhqwo4ajP5OvJvs1NIv19oqTUIVVZpOql0lZSQwxpB3mSlQyNjQyYus1XW6nXJMnDCL5hn7Kd_Q6hXHUXi7B9Yh_6Lq0n0CDiBvNm0nYfsEYEmHjI9Fkm2ZEqmPzf7xtsI2PLsQ6e2zDwFKf.8PXgDkONTYqKvMIXFzbaH4E7j0cHFk0vvdZ_2Gf_3f533TZLHg7ppbC0W'
-
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
 
     }
 
@@ -563,7 +560,7 @@ def spider():
     # 获取到结果集
     index = 0
     for link in link_list:
-        print('第', index, '条', '共', len(link_list), '条：', link)
+        print('第', index+1, '条', '共', len(link_list), '条：', link)
 
         cookies = requests.get(link, headers=headers).cookies
 

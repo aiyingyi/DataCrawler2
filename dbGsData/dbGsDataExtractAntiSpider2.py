@@ -1,24 +1,23 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
-# @Time    : 2021/9/26 11:14
+
+# @Time    : 2022/07/11 11:14
 # @Author  : aiyingyi
-# @FileName: dbGsDataExtract.py
+# @FileName: dbGsDataExtractAntiSpider.py
 # @Software: PyCharm
 
 '''
-
+解决反爬机制
 达标公示数据爬取，注意不是达标公布数据，公示数据没有达标编号，详情页连接是从excel中读取的
-
 将爬取数据的连接直接放在excel的第一列
 
 '''
+import time
 
 import openpyxl
 import requests
 
 from bs4 import BeautifulSoup
 from utils.spiderUtils import utils
-
 
 # 返回一个综合数据的模板对象
 def get_data():
@@ -543,33 +542,29 @@ def spider():
         定义请求头
     """
     headers = {
+
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'Accept-Encoding': 'gzip, deflate',
         'Accept-Language': 'zh-CN,zh;q=0.9',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-
         'Host': 'atestsc.rioh.cn',
         'Pragma': 'no-cache',
         'Upgrade-Insecure-Requests': '1',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36',
-         'Cookie':'9o3WBaX7PdQoS=5liOa4PnGgJBV1qPl0qUaq_fLg7XN79hjK7Y6z5Z3cdztc8uiM_ZsK4JId02qqxqhs7VSOcHeTYq4mw0ym8ycQa; acw_tc=2f61f26516575516838712508e1404a33feeb06b80080475bb5ca2ba4f67cf; 9o3WBaX7PdQoT=5FZVnMCBmJpQxcAPEyWlouAz5QKtzHnfWjiBYUVqaR3BlY6IhIBgJ.EL88GhXu0kaZGCz0Jz70NbZvhqwo4ajP5OvJvs1NIv19oqTUIVVZpOql0lZSQwxpB3mSlQyNjQyYus1XW6nXJMnDCL5hn7Kd_Q6hXHUXi7B9Yh_6Lq0n0CDiBvNm0nYfsEYEmHjI9Fkm2ZEqmPzf7xtsI2PLsQ6e2zDwFKf.8PXgDkONTYqKvMIXFzbaH4E7j0cHFk0vvdZ_2Gf_3f533TZLHg7ppbC0W'
-
-
+        'Cookie': 'acw_tc=2f624a0f16575310637734798e36a3ed837a187f25a3e62ab34ae29a8cbe4a; 9o3WBaX7PdQoS=52Wq0luxwq_sUbQJnGU.DEplydMC9KgwueE6NRiMgZOXyIbvNiaXqJpnQ5NPnMe3QM9dWoTx55J9i3WKMN3Fk.q; 9o3WBaX7PdQoT=5FZhbobBcy7AxcAPEyRsutAV2.1p0yEBjhMIpCiq6mzhiTm1mBD8eqON8lJA2p0chJluIUOh2H5RPw5wZA6ztwmeqQvppP1J51JKUFQUcG7vYa0nPynjDhwV.kd9_lp7ICZkHQgN_Gn0YfmjNGfIEyU4_MD0kAz1eadbLOk72tf4ufSl2z0qFs2Ng_rAW3haYqJJtqpiHsBjRWv8JnhNZl6XY5iOF6pgtWI2FDXyqPMvlXzarK6VM3l7PvMMrYAS2DMos.0A34ubjQI1p6UPUKZdEUVPaWXQYdZAwbcsnuoKvIo.uu.xH2HvG0alflWZnXS8KkuxD4FeceqDxUxqRuM'
     }
 
     # 定义空的结果集合
     result = []
     # 获取到结果集
-    index = 0
-    for link in link_list:
-        print('第', index, '条', '共', len(link_list), '条：', link)
 
-        cookies = requests.get(link, headers=headers).cookies
+    for index in range(0, len(link_list)):
+        print('第', index + 1, '条', '共', len(link_list), '条：', link_list[index])
+        #  获取cookies
+        pageContent = requests.get(link_list[index], headers=headers)
+        response = pageContent.content.decode('utf-8')
 
-        # headers['Cookie']='9o3WBaX7PdQoS='+cookies['9o3WBaX7PdQoS']+';'+'acw_tc='+cookies['acw_tc']
-        # 获取到每一页的连接
-        response = requests.get(link, headers=headers).content.decode('utf-8')
         soup = BeautifulSoup(response, 'html.parser')
         # 获取标题
         title = soup.find('h3').text
@@ -589,11 +584,7 @@ def spider():
         res['PC'] = 44
 
         result.append(res)
-        index = index + 1
-
-    # 将数据存入excel中
-    utils.saveData(result, r'C:\Users\13099\Desktop\达标公示数据结果.xlsx')
-
-
+        utils.saveData(result, r'C:\Users\13099\Desktop\达标公示数据结果.xlsx')
+        result=[]
 if __name__ == '__main__':
     spider()

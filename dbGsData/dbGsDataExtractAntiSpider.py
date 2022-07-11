@@ -1,23 +1,29 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
-# @Time    : 2021/9/26 11:14
+
+# @Time    : 2022/07/11 11:14
 # @Author  : aiyingyi
-# @FileName: dbGsDataExtract.py
+# @FileName: dbGsDataExtractAntiSpider.py
 # @Software: PyCharm
 
 '''
-
+解决反爬机制
 达标公示数据爬取，注意不是达标公布数据，公示数据没有达标编号，详情页连接是从excel中读取的
-
 将爬取数据的连接直接放在excel的第一列
 
 '''
+import time
 
 import openpyxl
 import requests
 
 from bs4 import BeautifulSoup
 from utils.spiderUtils import utils
+
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 # 返回一个综合数据的模板对象
@@ -543,33 +549,59 @@ def spider():
         定义请求头
     """
     headers = {
+
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'Accept-Encoding': 'gzip, deflate',
         'Accept-Language': 'zh-CN,zh;q=0.9',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-
         'Host': 'atestsc.rioh.cn',
         'Pragma': 'no-cache',
         'Upgrade-Insecure-Requests': '1',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36',
-         'Cookie':'9o3WBaX7PdQoS=5liOa4PnGgJBV1qPl0qUaq_fLg7XN79hjK7Y6z5Z3cdztc8uiM_ZsK4JId02qqxqhs7VSOcHeTYq4mw0ym8ycQa; acw_tc=2f61f26516575516838712508e1404a33feeb06b80080475bb5ca2ba4f67cf; 9o3WBaX7PdQoT=5FZVnMCBmJpQxcAPEyWlouAz5QKtzHnfWjiBYUVqaR3BlY6IhIBgJ.EL88GhXu0kaZGCz0Jz70NbZvhqwo4ajP5OvJvs1NIv19oqTUIVVZpOql0lZSQwxpB3mSlQyNjQyYus1XW6nXJMnDCL5hn7Kd_Q6hXHUXi7B9Yh_6Lq0n0CDiBvNm0nYfsEYEmHjI9Fkm2ZEqmPzf7xtsI2PLsQ6e2zDwFKf.8PXgDkONTYqKvMIXFzbaH4E7j0cHFk0vvdZ_2Gf_3f533TZLHg7ppbC0W'
-
-
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
+        # 'Cookie':'9o3WBaX7PdQoS=5Wx3SdcPi55o.W5OcKgvFrUfmj692XFal0qwoElX_5am0PSd4i.Z9W86VFlhemkz.0ywKzirJo5EuhPqe0zRKWA; 9o3WBaX7PdQoT=5FZhIebBc6.0xcAPEyVMj1q9trZ.mjw7gF9PsDR7.ScbciZ6.DjHBTZCa6NQyk41B2e2ZTqKMBF0cXFi8Cq6Gdc67s3f8iH4ie6p_3Rh0qhETj7LID_qliSSoECsKvPebYtLQ8OmRrowR5pOXNRx2QYviqzMH1F6Iv6wRIJ.Xw86VnBRZPnZN96aWwwOPocwhoMZYAosFXBn0oYJlj_Q9mGXmpIb.ZP1cfRHbqmH_nBSu6X4qyRpauHuadPJRehymla40d0sYR0webHGrBvsVxRpT0moFb0oxbWv7u5pDKYe0kvSIn3t4UmrVAMMAmWON6vb6Y.noSS3D.tIIhknXzF'
     }
 
     # 定义空的结果集合
     result = []
     # 获取到结果集
     index = 0
+
+    # chrome_options = Options()
+    # chrome_options.add_argument('--headless')
+    # chrome_options.add_argument('--disable-gpu')
+    # driver = webdriver.Chrome(options=chrome_options)
+
+    chrome_options = Options()
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument('--disable-gpu')
+
+    user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
+    chrome_options.add_argument(f'user-agent={user_agent}')
+
+    browser = webdriver.PhantomJS()
+    browser.maximize_window()
+    wait = WebDriverWait(browser, 40)
+
     for link in link_list:
         print('第', index, '条', '共', len(link_list), '条：', link)
+        browser.get(link)
+        wait.until(lambda e: e.execute_script('return document.readyState') != "loading")
+        print(browser.page_source)
+        #  获取cookies
+        cookies = browser.get_cookies()
+        Cookie = cookies[1]['name'] + '=' + cookies[1]['value'] + ';'
+        Cookie = Cookie + cookies[2]['name'] + '=' + cookies[2]['value'] + ';'
+        Cookie = Cookie + cookies[0]['name'] + '=' + cookies[0]['value']
 
-        cookies = requests.get(link, headers=headers).cookies
-
-        # headers['Cookie']='9o3WBaX7PdQoS='+cookies['9o3WBaX7PdQoS']+';'+'acw_tc='+cookies['acw_tc']
-        # 获取到每一页的连接
+        headers['Cookie'] = Cookie
         response = requests.get(link, headers=headers).content.decode('utf-8')
+        print(Cookie)
+
+        print('----------------------------------------------------')
+        print(response)
         soup = BeautifulSoup(response, 'html.parser')
         # 获取标题
         title = soup.find('h3').text
@@ -591,6 +623,7 @@ def spider():
         result.append(res)
         index = index + 1
 
+    browser.close()
     # 将数据存入excel中
     utils.saveData(result, r'C:\Users\13099\Desktop\达标公示数据结果.xlsx')
 
