@@ -11,7 +11,6 @@
 '''
 
 import openpyxl
-import requests
 
 from bs4 import BeautifulSoup
 from utils.spiderUtils import utils
@@ -19,41 +18,6 @@ from utils.spiderUtils import utils
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
-
-
-# 返回一个综合数据的模板对象
-def get_data():
-    return {
-        'CPXH': '', 'SCQY': '', 'CPMC': '', 'CLLB': '', 'RLZL': '', 'DBCXBH': '',
-        'PC': '', 'LEVEL': '', 'KCLX': '', 'DPXH': '', 'OUT_SIZE': '', 'ZZL': '', 'QDXS': '',
-        'LTGG': '', 'CMFHZZ': '', 'QXBFHZZ': '', 'JGDSL_QX': '', 'JGDSL_SPCZM': '', 'ZHBZBS': '',
-        'ZDQXS': '', 'ZDJXZDTZZZ': '', 'WDJKZZ': '', 'JSSLTBS': '', 'LGBZXH': '', 'ZDQCP': '',
-        'FBZDZZ': '', 'ESCXH': '', 'LDWSXH': '', 'ZHRLXHL': '', 'WXHWCLLX': '', 'PQGCKWZ': '', 'HSQZDZZ': '',
-        'DWLHSQBJXT': '', 'QFBHZZ': '', 'GTWBZHBF': '', 'TDYSJZ': '', 'FDJXH': '', 'HXLBNCC_RJ': '',
-        'ZBZL': '', 'ZGCS': '', 'ZXZ': '', 'LTSL': '', 'HXBFH': '', 'QZWBJSBZ': '',
-        'QCDJDXJ': '', 'RQPSLJWZ': '', 'QYZDXT': '', 'YLCSLJQ_CQT': '', 'YLCSLJQ_ZDQS': '', 'WXDW': '',
-        'QTXLBJ': '', 'LTQYJCXTXH': '', 'ZDCQTEDGZQY': '', 'FBZDZZXHBJZZ': '', 'CLQXPZYJ': '', 'ZDJJZDXTXH': '',
-        'XJXS': '', 'DZZDXTKJQXH': '', 'DWLHSQGRZZ': '', 'DWLHSQZDMHZZ': '', 'HBFHBZ': '', 'GTWBZHXBFHZZJJ': '',
-        'CWXLJ': '', 'XLCJG': '', 'XLCYSZZ': '', 'YXCMFH': '', 'YXJQDJL': '', 'JQKYB': '',
-        'CDZFHZZ': '', 'FDJWZ': '', 'DCFSLHQ': '', 'TBQZYBZ': '', 'CKMSLJWZ': '', 'CKMJG': '',
-        'WTSYJCSL': '', 'YJCXH': '', 'HWYJCKPZ': '', 'YJMSLJWZ': '', 'YJMYDKD': '', 'ZJJ': '',
-        'ZYS': '', 'ZDK': '', 'ZYHY': '', 'ZYAQD': '', 'AQDTXZZ': '', 'SPJKXTXH': '',
-        'KQTJZZ': '', 'TFHQZZ': '', 'WSJ': '', 'ZDPBQ': '', 'ZDQYXSJXYZZ': '', 'ZKRS': '',
-        'XJLX': '', 'CYZWSBS': '', 'RJXLCRJ': '', 'TCXSL': '', 'RYXSL': '', 'YXJHDJL': '',
-        'DPJZRHXT': '', 'FDJCZDMHZZ': '', 'DLDCXZDMHZZ': '', 'SDZXJG': '', 'JSYSFDB': '', 'AQBZ': '',
-        'CKMYJKZQ': '', 'YJCSL': '', 'YJCSXXHBJZZ': '', 'AQDCSLJWZ': '', 'AQCKSL': '', 'KCNTDK': '',
-        'CNTDZDZY': '', 'KBJDKT': '', 'KBG': '', 'FS_KTDC': '', 'ZYJD': '', 'CNXLJ': '',
-        'KQJHZZ': '', 'YYBFJMKFSB': '', 'CANZX': '', 'ZCZZXH': '', 'ZDQXS_QH': '', 'JXLJZZXH': '',
-        'BGC_QYZGG': '', 'BGCQHZBJ': '', 'BGCJXBJ': '', 'ZDXYSJC': '', 'QYGGHZXKZJ': '', 'GC_QYHCZHDSPJL': '',
-        'GCSJZGCS': '', 'CSFGBS': '', 'QZWBJXSJZZ': '', 'WBBZBSL': '', 'CCBZP': '', 'QYXZBLDGD': '',
-        'BGC_BGQYCQHZBJ': '', 'BGC_BGQYCHHZBJ': '', 'BGCZHDSPJL': '', 'ZZHGCQHZBJ': '', 'QYGGHZXLDGD': '', 'ZJAQQL': '',
-        'RJXCD': '', 'MQJCXT': '', 'DLZX': '', 'ZHJ': '', 'FJAQQL': '', 'TYCXZX': '',
-        'DCLD': '', 'MHQ': '', 'ZTGCZZL': '', 'QYZCZMLDGD': '', 'BGQYCQHZBJ': '', 'BGQYCHHZBJ': '',
-        'ZDXYSJA': '', 'BGQYCLZQDDJL': '', 'QYGLJQXH': '', 'QYHCZHDSPJL': '', 'WXHWYSCLLX': '', 'HXLBNCC': '',
-        'YZWTSYZZ': '', 'BGQYC_BGCQYXGG': '', 'BGQYC_BGCQHZBJ': '', 'BGQYC_BGCJXBJ': '', 'ZDXYSJB': '',
-        'BGQYC_BGCZHDSPJL': '', 'QYGLJQZXLDGD': '', 'QYHC_ZZZGCQHZBJ': ''
-    }
-
 
 
 # 返回一个综合数据的模板对象
@@ -601,30 +565,12 @@ def spider():
         cell = sheet.cell(row=row, column=1).value
         link_list.append(cell)
 
-    """
-        定义请求头
-    """
-    headers = {
-
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        'Accept-Encoding': 'gzip, deflate',
-        'Accept-Language': 'zh-CN,zh;q=0.9',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-        'Host': 'atestsc.rioh.cn',
-        'Pragma': 'no-cache',
-        'Upgrade-Insecure-Requests': '1',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
-    }
-
     # 定义空的结果集合
     result = []
     # 获取到结果集
     index = 0
 
     chrome_options = Options()
-
-
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('lang=zh_CN.UTF-8')
     chrome_options.add_argument('headless')  # 无头浏览器
