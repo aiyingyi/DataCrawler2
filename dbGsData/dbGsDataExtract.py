@@ -6,7 +6,7 @@
 # @Software: PyCharm
 
 '''
-解决反爬机制
+V1.0 无反爬机制，废弃不用
 达标公示数据爬取，注意不是达标公布数据，公示数据没有达标编号，详情页连接是从excel中读取的
 将爬取数据的连接直接放在excel的第一列
 
@@ -574,7 +574,7 @@ def spider():
         'Pragma': 'no-cache',
         'Upgrade-Insecure-Requests': '1',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36',
-        'Cookie': '9o3WBaX7PdQoS=5liOa4PnGgJBV1qPl0qUaq_fLg7XN79hjK7Y6z5Z3cdztc8uiM_ZsK4JId02qqxqhs7VSOcHeTYq4mw0ym8ycQa; acw_tc=2f61f26916575900801223879e40dc06823a29653d2e381862bf90988e64c0; 9o3WBaX7PdQoT=5FZUM0bBmCNLxcAPE51TtaABR9lxrt9iF6Ho4jdxfUueyw0QCN6zlmPrb63CcZoqm4IXFfKzKYPo.zdVF5JEtHRzBbQ29BeQahxQX25P8wZ_HzYosHkVlW51PENZBVD6AuuYJmkI.CZYzE0q3HUAEKQA9vFO5Be2mTBPQBBNaBINfGzaLkE.1p9yEXLvtOCucAKXop6bbKCIhSVJ2tFG0Keih1GU5mtX1M8SroPQ39ZhUq7u9N1lz04uR9vOSNBiu4rBuiHDFjv_1hitx32K45VTeB55ogOv9YyJMxATnbspf11PYSaxj7g6kIBux11Ikq3Gmzqwai6BO.5aCu31FOM'
+        'Cookie': '9o3WBaX7PdQoT=5FZAxJKBlcIaxcAPE5Qo2yGUtzrVkBrNWncsLUxB21lkLfUL_N52Olge66OBMWIs.ENJY8NwxJe3Bq977Q7jmO_sIgCjAeKdKJ5hVBsqzLSCC5YA_hpTtYirZoE9UQgmIITgmEiAgcTckF5xdy9GFHivYgHN.S7d7ruPYuw03kQd33gvc0a48vR_uDD0kBEBf4aIvevpzZ4SCt4ARpbBgQipLtuDej_f7kjYXfBkswuBo_UeCorU.oFgJEau6TJ3CXVhS4_CXwxL.YzDl0FCubE;9o3WBaX7PdQoS=5qvAkLXqWWRJrXXbqMkD8CB7F30lHOIf1Ae0IRYbA2jVEHWfmE9sjM6Uxt.bmjycXGIJg.YuzOnhyhBQM07llkq;acw_tc=2f624a0916576022932401338e1982479c813059acf64722841415190f3d02'
     }
 
     # 定义空的结果集合

@@ -6,12 +6,9 @@
 # @Software: PyCharm
 
 '''
-解决反爬机制
-达标公示数据爬取，注意不是达标公布数据，公示数据没有达标编号，详情页连接是从excel中读取的
-将爬取数据的连接直接放在excel的第一列
-
+1. 解决反爬机制
+2. 达标公示数据爬取，公示数据没有达标编号，详情页连接是从excel中读取的。将所有爬取数据的链接直接放在一个新的excel的第一列
 '''
-import time
 
 import openpyxl
 import requests
@@ -19,10 +16,8 @@ import requests
 from bs4 import BeautifulSoup
 from utils.spiderUtils import utils
 
-
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 
 
@@ -538,7 +533,7 @@ def parse_gc_page(soup):
 # 爬取数据
 def spider():
     link_list = []
-    wb = openpyxl.load_workbook(r'C:\Users\13099\Desktop\达标公示数据.xlsx')
+    wb = openpyxl.load_workbook(r'C:\Users\13099\Desktop\1.xlsx')
     sheet = wb.active
     # 将连接保存到集合
     for row in range(1, sheet.max_row + 1):
@@ -559,7 +554,6 @@ def spider():
         'Pragma': 'no-cache',
         'Upgrade-Insecure-Requests': '1',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
-        # 'Cookie':'9o3WBaX7PdQoS=5Wx3SdcPi55o.W5OcKgvFrUfmj692XFal0qwoElX_5am0PSd4i.Z9W86VFlhemkz.0ywKzirJo5EuhPqe0zRKWA; 9o3WBaX7PdQoT=5FZhIebBc6.0xcAPEyVMj1q9trZ.mjw7gF9PsDR7.ScbciZ6.DjHBTZCa6NQyk41B2e2ZTqKMBF0cXFi8Cq6Gdc67s3f8iH4ie6p_3Rh0qhETj7LID_qliSSoECsKvPebYtLQ8OmRrowR5pOXNRx2QYviqzMH1F6Iv6wRIJ.Xw86VnBRZPnZN96aWwwOPocwhoMZYAosFXBn0oYJlj_Q9mGXmpIb.ZP1cfRHbqmH_nBSu6X4qyRpauHuadPJRehymla40d0sYR0webHGrBvsVxRpT0moFb0oxbWv7u5pDKYe0kvSIn3t4UmrVAMMAmWON6vb6Y.noSS3D.tIIhknXzF'
     }
 
     # 定义空的结果集合
@@ -567,41 +561,41 @@ def spider():
     # 获取到结果集
     index = 0
 
-    # chrome_options = Options()
-    # chrome_options.add_argument('--headless')
-    # chrome_options.add_argument('--disable-gpu')
-    # driver = webdriver.Chrome(options=chrome_options)
-
     chrome_options = Options()
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--disable-dev-shm-usage')
-    chrome_options.add_argument("--headless")
+    # chrome_options.add_argument('--no-sandbox')
+    # chrome_options.add_argument('--disable-dev-shm-usage')
+    # chrome_options.add_argument("--headless")
+    # chrome_options.add_argument('--disable-gpu')
+
     chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_argument('lang=zh_CN.UTF-8')
+    chrome_options.add_argument('headless')  # 无头浏览器
+    chrome_options.add_argument('--no-sandbox')  # 必要！！
+    chrome_options.add_argument('--disable-dev-shm-usage')  # 必要！！
 
     user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
     chrome_options.add_argument(f'user-agent={user_agent}')
 
-    browser = webdriver.PhantomJS()
+    chrome_options.add_experimental_option('excludeSwitches',
+                                           ['enable-automation'])  # 这里去掉window.navigator.webdriver的特性
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+
+    browser = webdriver.Chrome(options=chrome_options)
     browser.maximize_window()
+
     wait = WebDriverWait(browser, 40)
 
     for link in link_list:
-        print('第', index, '条', '共', len(link_list), '条：', link)
+        print('第', index + 1, '条', '共', len(link_list), '条：', link)
         browser.get(link)
         wait.until(lambda e: e.execute_script('return document.readyState') != "loading")
-        print(browser.page_source)
-        #  获取cookies
-        cookies = browser.get_cookies()
-        Cookie = cookies[1]['name'] + '=' + cookies[1]['value'] + ';'
-        Cookie = Cookie + cookies[2]['name'] + '=' + cookies[2]['value'] + ';'
-        Cookie = Cookie + cookies[0]['name'] + '=' + cookies[0]['value']
+        Cookie = ''
+        for cookie in browser.get_cookies():
+            Cookie = Cookie + cookie['name'] + '=' + cookie['value'] + ';'
 
         headers['Cookie'] = Cookie
-        response = requests.get(link, headers=headers).content.decode('utf-8')
-        print(Cookie)
-
-        print('----------------------------------------------------')
-        print(response)
+        requestPage = requests.get(link, headers=headers)
+        response = requestPage.content.decode('utf-8')
         soup = BeautifulSoup(response, 'html.parser')
         # 获取标题
         title = soup.find('h3').text
@@ -621,12 +615,12 @@ def spider():
         res['PC'] = 44
 
         result.append(res)
+
+        # 将数据存入excel中
+        utils.saveData(result, r'C:\Users\13099\Desktop\达标公示数据结果.xlsx')
         index = index + 1
+        result = []
 
-    browser.close()
-    # 将数据存入excel中
-    utils.saveData(result, r'C:\Users\13099\Desktop\达标公示数据结果.xlsx')
-
-
+    browser.quit()
 if __name__ == '__main__':
     spider()
