@@ -55,12 +55,49 @@ def get_data():
     }
 
 
+
+# 返回一个综合数据的模板对象
+def get_data():
+    return {
+        'CPXH': '', 'SCQY': '', 'CPMC': '', 'CLLB': '', 'RLZL': '', 'DBCXBH': '',
+        'PC': '', 'LEVEL': '', 'KCLX': '', 'DPXH': '', 'OUT_SIZE': '', 'ZZL': '', 'QDXS': '',
+        'LTGG': '', 'CMFHZZ': '', 'QXBFHZZ': '', 'JGDSL_QX': '', 'JGDSL_SPCZM': '', 'ZHBZBS': '',
+        'ZDQXS': '', 'ZDJXZDTZZZ': '', 'WDJKZZ': '', 'JSSLTBS': '', 'LGBZXH': '', 'ZDQCP': '',
+        'FBZDZZ': '', 'ESCXH': '', 'LDWSXH': '', 'ZHRLXHL': '', 'WXHWCLLX': '', 'PQGCKWZ': '', 'HSQZDZZ': '',
+        'DWLHSQBJXT': '', 'QFBHZZ': '', 'GTWBZHBF': '', 'TDYSJZ': '', 'FDJXH': '', 'HXLBNCC_RJ': '',
+        'ZBZL': '', 'ZGCS': '', 'ZXZ': '', 'LTSL': '', 'HXBFH': '', 'QZWBJSBZ': '',
+        'QCDJDXJ': '', 'RQPSLJWZ': '', 'QYZDXT': '', 'YLCSLJQ_CQT': '', 'YLCSLJQ_ZDQS': '', 'WXDW': '',
+        'QTXLBJ': '', 'LTQYJCXTXH': '', 'ZDCQTEDGZQY': '', 'FBZDZZXHBJZZ': '', 'CLQXPZYJ': '', 'ZDJJZDXTXH': '',
+        'XJXS': '', 'DZZDXTKJQXH': '', 'DWLHSQGRZZ': '', 'DWLHSQZDMHZZ': '', 'HBFHBZ': '', 'GTWBZHXBFHZZJJ': '',
+        'CWXLJ': '', 'XLCJG': '', 'XLCYSZZ': '', 'YXCMFH': '', 'YXJQDJL': '', 'JQKYB': '',
+        'CDZFHZZ': '', 'FDJWZ': '', 'DCFSLHQ': '', 'TBQZYBZ': '', 'CKMSLJWZ': '', 'CKMJG': '',
+        'WTSYJCSL': '', 'YJCXH': '', 'HWYJCKPZ': '', 'YJMSLJWZ': '', 'YJMYDKD': '', 'ZJJ': '',
+        'ZYS': '', 'ZDK': '', 'ZYHY': '', 'ZYAQD': '', 'AQDTXZZ': '', 'SPJKXTXH': '',
+        'KQTJZZ': '', 'TFHQZZ': '', 'WSJ': '', 'ZDPBQ': '', 'ZDQYXSJXYZZ': '', 'ZKRS': '',
+        'XJLX': '', 'CYZWSBS': '', 'RJXLCRJ': '', 'TCXSL': '', 'RYXSL': '', 'YXJHDJL': '',
+        'DPJZRHXT': '', 'FDJCZDMHZZ': '', 'DLDCXZDMHZZ': '', 'SDZXJG': '', 'JSYSFDB': '', 'AQBZ': '',
+        'CKMYJKZQ': '', 'YJCSL': '', 'YJCSXXHBJZZ': '', 'AQDCSLJWZ': '', 'AQCKSL': '', 'KCNTDK': '',
+        'CNTDZDZY': '', 'KBJDKT': '', 'KBG': '', 'FS_KTDC': '', 'ZYJD': '', 'CNXLJ': '',
+        'KQJHZZ': '', 'YYBFJMKFSB': '', 'CANZX': '', 'ZCZZXH': '', 'ZDQXS_QH': '', 'JXLJZZXH': '',
+        'BGC_QYZGG': '', 'BGCQHZBJ': '', 'BGCJXBJ': '', 'ZDXYSJC': '', 'QYGGHZXKZJ': '', 'GC_QYHCZHDSPJL': '',
+        'GCSJZGCS': '', 'CSFGBS': '', 'QZWBJXSJZZ': '', 'WBBZBSL': '', 'CCBZP': '', 'QYXZBLDGD': '',
+        'BGC_BGQYCQHZBJ': '', 'BGC_BGQYCHHZBJ': '', 'BGCZHDSPJL': '', 'ZZHGCQHZBJ': '', 'QYGGHZXLDGD': '', 'ZJAQQL': '',
+        'RJXCD': '', 'MQJCXT': '', 'DLZX': '', 'ZHJ': '', 'FJAQQL': '', 'TYCXZX': '',
+        'DCLD': '', 'MHQ': '', 'ZTGCZZL': '', 'QYZCZMLDGD': '', 'BGQYCQHZBJ': '', 'BGQYCHHZBJ': '',
+        'ZDXYSJA': '', 'BGQYCLZQDDJL': '', 'QYGLJQXH': '', 'QYHCZHDSPJL': '', 'WXHWYSCLLX': '', 'HXLBNCC': '',
+        'YZWTSYZZ': '', 'BGQYC_BGCQYXGG': '', 'BGQYC_BGCQHZBJ': '', 'BGQYC_BGCJXBJ': '', 'ZDXYSJB': '',
+        'BGQYC_BGCZHDSPJL': '', 'QYGLJQZXLDGD': '', 'QYHC_ZZZGCQHZBJ': '','remark':'','armrest':''
+    }
+
+
 # 解析乘用车
 def parse_cyc_page(soup):
     data = get_data()
     data['CLLB'] = '乘用车'
     tables = soup.select('.info-table.thCenter.w')
     data['DBCXBH'] = tables[0].find('span').text
+
+    # 解析表格内容
     trs = tables[1].findAll('tr')
 
     data['SCQY'] = trs[0].findAll('td')[1].text
@@ -112,6 +149,13 @@ def parse_cyc_page(soup):
 
     data['ZDJJZDXTXH'] = trs[16].findAll('td')[1].text
     data['ZHRLXHL'] = trs[16].findAll('td')[3].text
+
+
+    data['remark'] = trs[len(trs)-2].findAll('td')[1].text
+
+
+
+
     return data
 
 
@@ -256,6 +300,12 @@ def parse_kc_page(soup):
 
     data['ZDJJZDXTXH'] = trs[44].findAll('td')[1].text
     data['ZHRLXHL'] = trs[44].findAll('td')[3].text
+
+    # 新增扶手
+    data['armrest'] = trs[32].findAll('td')[3].text
+
+    # 备注
+    data['remark'] = trs[45].findAll('td')[1].text
     return data
 
 
@@ -333,6 +383,8 @@ def parse_ysc_page(soup):
     data['ZDJJZDXTXH'] = trs[21].findAll('td')[3].text
 
     data['ZHRLXHL'] = trs[22].findAll('td')[1].text
+
+    data['remark'] = trs[30].findAll('td')[1].text
     return data
 
 
@@ -449,6 +501,9 @@ def parse_qyc_page(soup):
 
     data['ZHRLXHL'] = trs[35].findAll('td')[1].text
 
+    data['remark'] = trs[39].findAll('td')[1].text
+
+
     return data
 
 
@@ -527,7 +582,13 @@ def parse_gc_page(soup):
     data['GC_QYHCZHDSPJL'] = trs[22].findAll('td')[1].text
     data['QYGGHZXLDGD'] = trs[22].findAll('td')[3].text
 
+    data['remark'] = trs[len(trs)-2].findAll('td')[1].text
+
     return data
+
+
+
+
 
 
 # 爬取数据
@@ -609,7 +670,7 @@ def spider():
         result.append(res)
 
         # 将数据存入excel中
-        utils.saveData(result, r'C:\Users\13099\Desktop\达标公示数据结果.xlsx')
+        utils.saveData(result, r'C:\Users\13099\Desktop\达标公示数据结果.xls')
         index = index + 1
         result = []
 
