@@ -579,20 +579,14 @@ def spider():
     for link in link_list:
         print('第', index + 1, '条', '共', len(link_list), '条：', link)
 
-        browser.get(link)
-        wait.until(lambda e: e.execute_script('return document.readyState') != "loading")
-        browser.get(link)
+        # browser.get(link)
+        browser.get('https://ke.qq.com/')
         wait.until(lambda e: e.execute_script('return document.readyState') != "loading")
 
-        browser.get(link)
-        wait.until(lambda e: e.execute_script('return document.readyState') != "loading")
         print(browser.page_source)
         print(browser.get_cookies())
 
         browser.close();
-
-
-
 
         response = requests.get(link, headers=headers).content.decode('utf-8')
 

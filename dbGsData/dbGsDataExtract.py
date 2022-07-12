@@ -1,24 +1,23 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
-# @Time    : 2021/9/26 11:14
+
+# @Time    : 2022/07/11 11:14
 # @Author  : aiyingyi
-# @FileName: dbGsDataExtract.py
+# @FileName: dbGsDataExtractAntiSpider.py
 # @Software: PyCharm
 
 '''
-
+解决反爬机制
 达标公示数据爬取，注意不是达标公布数据，公示数据没有达标编号，详情页连接是从excel中读取的
-
 将爬取数据的连接直接放在excel的第一列
 
 '''
+import time
 
 import openpyxl
 import requests
 
 from bs4 import BeautifulSoup
 from utils.spiderUtils import utils
-
 
 # 返回一个综合数据的模板对象
 def get_data():
@@ -50,7 +49,7 @@ def get_data():
         'DCLD': '', 'MHQ': '', 'ZTGCZZL': '', 'QYZCZMLDGD': '', 'BGQYCQHZBJ': '', 'BGQYCHHZBJ': '',
         'ZDXYSJA': '', 'BGQYCLZQDDJL': '', 'QYGLJQXH': '', 'QYHCZHDSPJL': '', 'WXHWYSCLLX': '', 'HXLBNCC': '',
         'YZWTSYZZ': '', 'BGQYC_BGCQYXGG': '', 'BGQYC_BGCQHZBJ': '', 'BGQYC_BGCJXBJ': '', 'ZDXYSJB': '',
-        'BGQYC_BGCZHDSPJL': '', 'QYGLJQZXLDGD': '', 'QYHC_ZZZGCQHZBJ': ''
+        'BGQYC_BGCZHDSPJL': '', 'QYGLJQZXLDGD': '', 'QYHC_ZZZGCQHZBJ': '','remark':'','armrest':''
     }
 
 
@@ -60,6 +59,8 @@ def parse_cyc_page(soup):
     data['CLLB'] = '乘用车'
     tables = soup.select('.info-table.thCenter.w')
     data['DBCXBH'] = tables[0].find('span').text
+
+    # 解析表格内容
     trs = tables[1].findAll('tr')
 
     data['SCQY'] = trs[0].findAll('td')[1].text
@@ -111,6 +112,13 @@ def parse_cyc_page(soup):
 
     data['ZDJJZDXTXH'] = trs[16].findAll('td')[1].text
     data['ZHRLXHL'] = trs[16].findAll('td')[3].text
+
+
+    data['remark'] = trs[len(trs)-2].findAll('td')[1].text
+
+
+
+
     return data
 
 
@@ -255,6 +263,12 @@ def parse_kc_page(soup):
 
     data['ZDJJZDXTXH'] = trs[44].findAll('td')[1].text
     data['ZHRLXHL'] = trs[44].findAll('td')[3].text
+
+    # 新增扶手
+    data['armrest'] = trs[32].findAll('td')[3].text
+
+    # 备注
+    data['remark'] = trs[45].findAll('td')[1].text
     return data
 
 
@@ -332,6 +346,8 @@ def parse_ysc_page(soup):
     data['ZDJJZDXTXH'] = trs[21].findAll('td')[3].text
 
     data['ZHRLXHL'] = trs[22].findAll('td')[1].text
+
+    data['remark'] = trs[30].findAll('td')[1].text
     return data
 
 
@@ -448,6 +464,9 @@ def parse_qyc_page(soup):
 
     data['ZHRLXHL'] = trs[35].findAll('td')[1].text
 
+    data['remark'] = trs[39].findAll('td')[1].text
+
+
     return data
 
 
@@ -526,13 +545,15 @@ def parse_gc_page(soup):
     data['GC_QYHCZHDSPJL'] = trs[22].findAll('td')[1].text
     data['QYGGHZXLDGD'] = trs[22].findAll('td')[3].text
 
+    data['remark'] = trs[len(trs)-2].findAll('td')[1].text
+
     return data
 
 
 # 爬取数据
 def spider():
     link_list = []
-    wb = openpyxl.load_workbook(r'C:\Users\13099\Desktop\达标公示数据.xlsx')
+    wb = openpyxl.load_workbook(r'C:\Users\13099\Desktop\1.xlsx')
     sheet = wb.active
     # 将连接保存到集合
     for row in range(1, sheet.max_row + 1):
@@ -543,33 +564,29 @@ def spider():
         定义请求头
     """
     headers = {
+
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'Accept-Encoding': 'gzip, deflate',
         'Accept-Language': 'zh-CN,zh;q=0.9',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-
         'Host': 'atestsc.rioh.cn',
         'Pragma': 'no-cache',
         'Upgrade-Insecure-Requests': '1',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36',
-         'Cookie':'9o3WBaX7PdQoS=5liOa4PnGgJBV1qPl0qUaq_fLg7XN79hjK7Y6z5Z3cdztc8uiM_ZsK4JId02qqxqhs7VSOcHeTYq4mw0ym8ycQa; acw_tc=2f61f26516575516838712508e1404a33feeb06b80080475bb5ca2ba4f67cf; 9o3WBaX7PdQoT=5FZVnMCBmJpQxcAPEyWlouAz5QKtzHnfWjiBYUVqaR3BlY6IhIBgJ.EL88GhXu0kaZGCz0Jz70NbZvhqwo4ajP5OvJvs1NIv19oqTUIVVZpOql0lZSQwxpB3mSlQyNjQyYus1XW6nXJMnDCL5hn7Kd_Q6hXHUXi7B9Yh_6Lq0n0CDiBvNm0nYfsEYEmHjI9Fkm2ZEqmPzf7xtsI2PLsQ6e2zDwFKf.8PXgDkONTYqKvMIXFzbaH4E7j0cHFk0vvdZ_2Gf_3f533TZLHg7ppbC0W'
-
-
+        'Cookie': '9o3WBaX7PdQoS=5liOa4PnGgJBV1qPl0qUaq_fLg7XN79hjK7Y6z5Z3cdztc8uiM_ZsK4JId02qqxqhs7VSOcHeTYq4mw0ym8ycQa; acw_tc=2f61f26916575900801223879e40dc06823a29653d2e381862bf90988e64c0; 9o3WBaX7PdQoT=5FZUM0bBmCNLxcAPE51TtaABR9lxrt9iF6Ho4jdxfUueyw0QCN6zlmPrb63CcZoqm4IXFfKzKYPo.zdVF5JEtHRzBbQ29BeQahxQX25P8wZ_HzYosHkVlW51PENZBVD6AuuYJmkI.CZYzE0q3HUAEKQA9vFO5Be2mTBPQBBNaBINfGzaLkE.1p9yEXLvtOCucAKXop6bbKCIhSVJ2tFG0Keih1GU5mtX1M8SroPQ39ZhUq7u9N1lz04uR9vOSNBiu4rBuiHDFjv_1hitx32K45VTeB55ogOv9YyJMxATnbspf11PYSaxj7g6kIBux11Ikq3Gmzqwai6BO.5aCu31FOM'
     }
 
     # 定义空的结果集合
     result = []
     # 获取到结果集
-    index = 0
-    for link in link_list:
-        print('第', index, '条', '共', len(link_list), '条：', link)
 
-        cookies = requests.get(link, headers=headers).cookies
+    for index in range(0, len(link_list)):
+        print('第', index + 1, '条', '共', len(link_list), '条：', link_list[index])
+        #  获取cookies
+        pageContent = requests.get(link_list[index], headers=headers)
+        response = pageContent.content.decode('utf-8')
 
-        # headers['Cookie']='9o3WBaX7PdQoS='+cookies['9o3WBaX7PdQoS']+';'+'acw_tc='+cookies['acw_tc']
-        # 获取到每一页的连接
-        response = requests.get(link, headers=headers).content.decode('utf-8')
         soup = BeautifulSoup(response, 'html.parser')
         # 获取标题
         title = soup.find('h3').text
@@ -589,11 +606,7 @@ def spider():
         res['PC'] = 44
 
         result.append(res)
-        index = index + 1
-
-    # 将数据存入excel中
-    utils.saveData(result, r'C:\Users\13099\Desktop\达标公示数据结果.xlsx')
-
-
+        utils.saveData(result, r'C:\Users\13099\Desktop\达标公示数据结果.xlsx')
+        result=[]
 if __name__ == '__main__':
     spider()
