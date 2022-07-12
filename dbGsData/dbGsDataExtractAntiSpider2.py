@@ -562,8 +562,6 @@ def spider():
     index = 0
 
     chrome_options = Options()
-
-
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('lang=zh_CN.UTF-8')
     chrome_options.add_argument('headless')  # 无头浏览器
@@ -573,6 +571,7 @@ def spider():
     user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
     chrome_options.add_argument(f'user-agent={user_agent}')
 
+    # 解决反爬机制对webdriver的检测
     chrome_options.add_experimental_option('excludeSwitches',
                                            ['enable-automation'])  # 这里去掉window.navigator.webdriver的特性
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
@@ -585,8 +584,6 @@ def spider():
     for link in link_list:
         print('第', index + 1, '条', '共', len(link_list), '条：', link)
         browser.get(link)
-        wait.until(lambda e: e.execute_script('return document.readyState') != "loading")
-
         response = browser.page_source
         soup = BeautifulSoup(response, 'html.parser')
         # 获取标题
@@ -602,17 +599,16 @@ def spider():
             res = parse_ysc_page(soup)
         elif '挂车' in title:
             res = parse_gc_page(soup)
-
         # 添加批次信息
         res['PC'] = 44
-
         result.append(res)
-
-        # 将数据存入excel中
-        utils.saveData(result, r'C:\Users\13099\Desktop\达标公示数据结果.xlsx')
         index = index + 1
-        result = []
 
+
+    # 将数据存入excel中
+    utils.saveData(result, r'C:\Users\13099\Desktop\2.xlsx')
     browser.quit()
+
+
 if __name__ == '__main__':
     spider()
